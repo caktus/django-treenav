@@ -1,4 +1,4 @@
-{% load treenavtags %}
+{% load treenav_tags %}
 {% if menuitem.children %}
 <ul id="menu{% if menuitem.node.slug %}-{{ menuitem.node.slug }}{% endif %}" class="menu depth-{{ menuitem.node.level }}">
     {% for item in menuitem.children %}
