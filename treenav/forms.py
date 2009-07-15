@@ -48,7 +48,7 @@ class MenuItemForm(forms.ModelForm):
                 raise forms.ValidationError(str(e))
         return self.cleaned_data
     
-    def save(self, commit):
+    def save(self, commit=True):
         instance = super(MenuItemForm, self).save(commit=False)
         link = self.cleaned_data['link']
         content_type = self.cleaned_data['content_type']

@@ -1,12 +1,16 @@
 import pprint
 import time 
 
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
+from django.contrib.contenttypes.models import ContentType
 
 from treenav.models import MenuItem
+from treenav.forms import MenuItemForm
+
+from treenav.tests.models import Team
 
 
-class TreeNavTestCase(TransactionTestCase):
+class TreeNavTestCase(TestCase):
     def setUp(self):
         root = MenuItem.objects.create(
             label='Primary Navigation',
@@ -38,3 +42,18 @@ class TreeNavTestCase(TransactionTestCase):
         children = ('Home', 'Our Blog', 'About Us')
         for item, expected_label in zip(root.children, children):
             self.assertEqual(item.node.label, expected_label)
+    
+    def testGetAbsoluteUrl(self):
+        team = Team.objects.create(name='Durham Bulls')
+        ct = ContentType.objects.get(app_label='tests', model='team')
+        form = MenuItemForm({
+            'label': 'Durham Bulls',
+            'slug': 'durham-bulls',
+            'order': 4,
+            'content_type': ct.id,
+            'object_id': team.pk,
+        })
+        if not form.is_valid():
+            self.fail(form.errors)
+        menu = form.save()
+        self.assertEqual(menu.href, team.get_absolute_url())
