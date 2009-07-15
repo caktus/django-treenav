@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db.models.signals import post_save
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.cache import cache
 
 import mptt
 from mptt.utils import previous_current_next
@@ -122,13 +123,28 @@ class MenuItem(models.Model):
 mptt.register(MenuItem, order_insertion_by=['order'])
 
 
+CACHE_KEY = 'django-treenav-menumodels'
+
+
 def treenav_save_handler(sender, instance, created, **kwargs):
-    ct = ContentType.objects.get_for_model(sender)
-    try:
-        menu = MenuItem.objects.get(content_type=ct, object_id=instance.pk)
-    except ObjectDoesNotExist:
-        menu = None
-    if menu and (instance.get_absolute_url() != menu.href):
-        menu.href = instance.get_absolute_url()
-        menu.save()
+    if sender == MenuItem:
+        cache.delete(CACHE_KEY)
+    menu_models = cache.get(CACHE_KEY)
+    if not menu_models:
+        menu_models = []
+        for menu_item in MenuItem.objects.exclude(content_type__isnull=True):
+            menu_models.append(menu_item.content_type.model_class())
+    # only attempt to update MenuItem if sender is referenced
+    if sender in menu_models:
+        ct = ContentType.objects.get_for_model(sender)
+        try:
+            menu = MenuItem.objects.get(
+                content_type=ct,
+                object_id=instance.pk,
+            )
+        except ObjectDoesNotExist:
+            menu = None
+        if menu and (instance.get_absolute_url() != menu.href):
+            menu.href = instance.get_absolute_url()
+            menu.save()
 post_save.connect(treenav_save_handler)

@@ -70,7 +70,7 @@ class TreeNavTestCase(TestCase):
             object_id=team.pk,
             href=team.get_absolute_url(),
         )
-        # change slug and save it to activate post_save signal
+        # change slug and save it to fire post_save signal
         team.slug = 'wildcats'
         team.save()
         menu = MenuItem.objects.get(slug='durham-bulls')
