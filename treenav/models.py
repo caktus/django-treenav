@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.db.models.signals import post_save
+from django.core.exceptions import ObjectDoesNotExist
 
 import mptt
 from mptt.utils import previous_current_next
@@ -118,3 +120,15 @@ class MenuItem(models.Model):
         return self.slug
 
 mptt.register(MenuItem, order_insertion_by=['order'])
+
+
+def treenav_save_handler(sender, instance, created, **kwargs):
+    ct = ContentType.objects.get_for_model(sender)
+    try:
+        menu = MenuItem.objects.get(content_type=ct, object_id=instance.pk)
+    except ObjectDoesNotExist:
+        menu = None
+    if menu and (instance.get_absolute_url() != menu.href):
+        menu.href = instance.get_absolute_url()
+        menu.save()
+post_save.connect(treenav_save_handler)

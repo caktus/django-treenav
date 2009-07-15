@@ -44,7 +44,7 @@ class TreeNavTestCase(TestCase):
             self.assertEqual(item.node.label, expected_label)
     
     def testGetAbsoluteUrl(self):
-        team = Team.objects.create(name='Durham Bulls')
+        team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='tests', model='team')
         form = MenuItemForm({
             'label': 'Durham Bulls',
@@ -56,4 +56,22 @@ class TreeNavTestCase(TestCase):
         if not form.is_valid():
             self.fail(form.errors)
         menu = form.save()
+        self.assertEqual(menu.href, team.get_absolute_url())
+    
+    def testChangedGetAbsoluteUrl(self):
+        team = Team.objects.create(slug='durham-bulls')
+        ct = ContentType.objects.get(app_label='tests', model='team')
+        menu = MenuItem.objects.create(
+            parent=MenuItem.objects.get(slug='primary-nav'),
+            label='Durham Bulls',
+            slug='durham-bulls',
+            order=9,
+            content_type=ct,
+            object_id=team.pk,
+            href=team.get_absolute_url(),
+        )
+        # change slug and save it to activate post_save signal
+        team.slug = 'wildcats'
+        team.save()
+        menu = MenuItem.objects.get(slug='durham-bulls')
         self.assertEqual(menu.href, team.get_absolute_url())
