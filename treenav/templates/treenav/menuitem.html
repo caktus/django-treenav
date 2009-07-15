@@ -1,0 +1,13 @@
+{% load treenavtags %}
+{% if menuitem.children %}
+<ul id="menu{% if menuitem.node.slug %}-{{ menuitem.node.slug }}{% endif %}" class="menu depth-{{ menuitem.node.level }}">
+    {% for item in menuitem.children %}
+    <li id="menu-item-{{ item.node.slug }}" class="{% if item.active %}active{% else %}inactive{% endif %}-menu-item{% if not menuitem.node.is_root_node %} {{ menuitem.node.slug }}-child{% else %} top-level{% endif %}">
+        <a class="{% if item.active %}active{% else %}inactive{% endif %}-menu-item-link{% if not menuitem.node.is_root_node %} {{ menuitem.node.slug }}-child-link{% else %} top-level-link{% endif %}" href="{{ item.node.href }}">{{ item.node.label }}</a>
+        {% if item.active or full_tree %}
+            {% render_menu_children item %}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
