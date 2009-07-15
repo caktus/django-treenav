@@ -3,8 +3,6 @@ import copy
 from django import template
 from django.template.loader import render_to_string
 
-from mptt.utils import previous_current_next
-
 from treenav.templatetags import CaktNode, parse_args_kwargs
 from treenav.models import MenuItem
 
@@ -75,41 +73,6 @@ def single_level_menu(parser, token):
     return SingleLevelMenuNode(*args, **kwargs)
 
 
-class Item(object):
-    def __init__(self, node):
-        self.parent = None
-        self.node = node
-        self.children = []
-        self.active = False
-    
-    def __repr__(self):
-        return str(self.node)
-    
-    def add_child(self, item):
-        item.parent = self
-        self.children.append(item)
-    
-    def set_active(self, href):
-        if self.node.href == href:
-            self.active = True
-            parent = self.parent
-            while parent:
-                parent.active = True
-                parent = parent.parent
-            return self
-        else:
-            self.active = False
-            for child in self.children:
-                child.set_active(href)
-    
-    def to_dict(self):
-        return {
-            'node': self.node,
-            'active': self.active,
-            'children': [c.to_dict() for c in self.children],
-        }
-
-
 class MenuNode(CaktNode):
     """
     Renders the top-level items of a named Menu model object.
@@ -120,21 +83,7 @@ class MenuNode(CaktNode):
             menu = MenuItem.objects.get(slug=slug)
         except MenuItem.DoesNotExist:
             return ''
-        item = root = Item(menu)
-        for prev, curr, next in previous_current_next(menu.get_descendants()):
-            previous_item = item
-            item = Item(curr)
-            if not prev or prev.level < curr.level:
-                previous_item.add_child(item)
-            elif prev and prev.level > curr.level:
-                diff = prev.level - curr.level
-                parent = previous_item
-                while parent.node.level >= curr.level:
-                    parent = parent.parent
-                parent.add_child(item)
-            else:
-                previous_item.parent.add_child(item)
-        
+        root = menu.to_tree()
         root.set_active(context['request'].META['PATH_INFO'])
         children_context = copy.copy(context)
         children_context['menuitem'] = root

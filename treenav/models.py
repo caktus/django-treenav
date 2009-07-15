@@ -4,6 +4,42 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 import mptt
+from mptt.utils import previous_current_next
+
+
+class Item(object):
+    def __init__(self, node):
+        self.parent = None
+        self.node = node
+        self.children = []
+        self.active = False
+    
+    def __repr__(self):
+        return str(self.node)
+    
+    def add_child(self, item):
+        item.parent = self
+        self.children.append(item)
+    
+    def set_active(self, href):
+        if self.node.href == href:
+            self.active = True
+            parent = self.parent
+            while parent:
+                parent.active = True
+                parent = parent.parent
+            return self
+        else:
+            self.active = False
+            for child in self.children:
+                child.set_active(href)
+    
+    def to_dict(self):
+        return {
+            'node': self.node,
+            'active': self.active,
+            'children': [c.to_dict() for c in self.children],
+        }
 
 
 class MenuItem(models.Model):
@@ -61,19 +97,22 @@ class MenuItem(models.Model):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     href = models.CharField(_('href'), editable=False, max_length=255)
     
-    
-    def height(self):
-        """ Returns height of node in tree """
-        if self.parent:
-            return self.parent.height() + 1
-        else:
-            return 1
-    
-    def up(self):
-        if self.parent:
-            return self.parent
-        else:
-            return self.menu
+    def to_tree(self):
+        item = root = Item(self)
+        for prev, curr, next in previous_current_next(self.get_descendants()):
+            previous_item = item
+            item = Item(curr)
+            if not prev or prev.level < curr.level:
+                previous_item.add_child(item)
+            elif prev and prev.level > curr.level:
+                diff = prev.level - curr.level
+                parent = previous_item
+                while parent.node.level >= curr.level:
+                    parent = parent.parent
+                parent.add_child(item)
+            else:
+                previous_item.parent.add_child(item)
+        return root
     
     def __unicode__(self):
         return self.slug
