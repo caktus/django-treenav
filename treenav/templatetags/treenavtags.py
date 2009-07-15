@@ -3,28 +3,14 @@ import copy
 from django import template
 from django.template.loader import render_to_string
 
-from caktus.django.templatetags import CaktNode, parse_args_kwargs
-
-from treenav.models import MenuItem
-
 from mptt.utils import previous_current_next
 
-# import treenav
-# print treenav
+from treenav.templatetags import CaktNode, parse_args_kwargs
+from treenav.models import MenuItem
+
 
 register = template.Library()
 
-
-# import copy
-# 
-# 
-# from django.conf import settings
-# from django.template.loader import render_to_string
-# from django.contrib.auth.models import User
-# from django.utils.encoding import smart_str
-# from django.template import Node, NodeList, Variable, Library
-# from django.template import TemplateSyntaxError, VariableDoesNotExist
-# from django.core.urlresolvers import reverse
 
 def copy_context(orig):
     new = {}
