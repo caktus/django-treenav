@@ -84,7 +84,9 @@ class MenuNode(CaktNode):
         except MenuItem.DoesNotExist:
             return ''
         root = menu.to_tree()
-        root.set_active(context['request'].META['PATH_INFO'])
+        active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        if active_leaf:
+            context['active_menu_items'] = active_leaf.get_ancestors()
         children_context = copy.copy(context)
         children_context['menuitem'] = root
         children_context['full_tree'] = ('True' == full_tree)

@@ -33,9 +33,19 @@ class Item(object):
                 parent = parent.parent
             return self
         else:
+            leaf = None
             self.active = False
             for child in self.children:
-                child.set_active(href)
+                child = child.set_active(href)
+                if child:
+                    leaf = child
+            return leaf
+    
+    def get_ancestors(self):
+        if not self.parent:
+            return []
+        else:
+            return self.parent.get_ancestors() + [self]
     
     def to_dict(self):
         return {
