@@ -130,12 +130,14 @@ class MenuItem(models.Model):
     
     def save(self, *args, **kwargs):
         if self.link:
-            if self.link[0] == '/':
+            if self.link.startswith('/'):
                 self.href = self.link
             else:
                 self.href = reverse(self.link)
         elif self.content_object:
             self.href = self.content_object.get_absolute_url()
+        else:
+            self.href = ''
         super(MenuItem, self).save(*args, **kwargs)
     
     def __unicode__(self):
