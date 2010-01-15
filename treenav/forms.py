@@ -48,20 +48,8 @@ class MenuItemForm(forms.ModelForm):
                 raise forms.ValidationError(str(e))
         return self.cleaned_data
     
-    def save(self, commit=True):
-        instance = super(MenuItemForm, self).save(commit=False)
-        link = self.cleaned_data['link']
-        content_type = self.cleaned_data['content_type']
-        object_id = self.cleaned_data['object_id']
-        if link:
-            if link[0] == '/':
-                instance.href = link
-            else:
-                instance.href = reverse(link)
-        elif content_type and object_id:
-            obj = content_type.get_object_for_this_type(pk=object_id)
-            instance.href = obj.get_absolute_url()
-        instance.save()
+    def save(self):
+        instance = super(MenuItemForm, self).save()
         
         # reorganize if necessary
         if self.cleaned_data['new_parent']:

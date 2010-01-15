@@ -5,6 +5,7 @@ from django.contrib.contenttypes import generic
 from django.db.models.signals import post_save
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 
 import mptt
 from mptt.utils import previous_current_next
@@ -126,6 +127,16 @@ class MenuItem(models.Model):
             else:
                 previous_item.parent.add_child(item)
         return root
+    
+    def save(self, *args, **kwargs):
+        if self.link:
+            if self.link[0] == '/':
+                self.href = self.link
+            else:
+                self.href = reverse(self.link)
+        elif self.content_object:
+            self.href = self.content_object.get_absolute_url()
+        super(MenuItem, self).save(*args, **kwargs)
     
     def __unicode__(self):
         return self.slug
