@@ -50,9 +50,13 @@ class MenuItemForm(forms.ModelForm):
     
     def save(self, commit=True):
         # ## WARNING ##
-        # we have to save the instance regardless of the commit flag, because
+        # (1) respect the caller's commit argument, so that the form will
+        # have a save_m2m method when commit=False
+        instance = super(MenuItemForm, self).save(commit=commit)
+        # (2) if commit is False, we have to save the form anyway, because
         # the instance must be saved to call move_to
-        instance = super(MenuItemForm, self).save()
+        if not commit:
+            instance.save()
         # reorganize if necessary
         if self.cleaned_data['new_parent']:
             parent = self.cleaned_data['new_parent']
