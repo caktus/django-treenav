@@ -146,28 +146,26 @@ class MenuItem(models.Model):
 mptt.register(MenuItem, order_insertion_by=['order'])
 
 
-CACHE_KEY = 'django-treenav-menumodels'
-
-
-def treenav_save_handler(sender, instance, created, **kwargs):
+def treenav_save_other_object_handler(sender, instance, created, **kwargs):
+    """
+    This signal attempts to update the HREF of any menu items that point to
+    another model object, when that objects is saved.
+    """
+    cache_key = 'django-treenav-menumodels'
     if sender == MenuItem:
-        cache.delete(CACHE_KEY)
-    menu_models = cache.get(CACHE_KEY)
+        cache.delete(cache_key)
+    menu_models = cache.get(cache_key)
     if not menu_models:
         menu_models = []
         for menu_item in MenuItem.objects.exclude(content_type__isnull=True):
             menu_models.append(menu_item.content_type.model_class())
-    # only attempt to update MenuItem if sender is referenced
+        cache.set(cache_key, menu_models)
+    # only attempt to update MenuItem if sender is known to be referenced
     if sender in menu_models:
         ct = ContentType.objects.get_for_model(sender)
-        try:
-            menu = MenuItem.objects.get(
-                content_type=ct,
-                object_id=instance.pk,
-            )
-        except ObjectDoesNotExist:
-            menu = None
-        if menu and (instance.get_absolute_url() != menu.href):
-            menu.href = instance.get_absolute_url()
-            menu.save()
-post_save.connect(treenav_save_handler)
+        items = MenuItem.objects.filter(content_type=ct, object_id=instance.pk)
+        for item in items:
+            if item.href != instance.get_absolute_url():
+                item.href = instance.get_absolute_url()
+                item.save()
+post_save.connect(treenav_save_other_object_handler)

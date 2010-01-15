@@ -48,9 +48,11 @@ class MenuItemForm(forms.ModelForm):
                 raise forms.ValidationError(str(e))
         return self.cleaned_data
     
-    def save(self):
+    def save(self, commit=True):
+        # ## WARNING ##
+        # we have to save the instance regardless of the commit flag, because
+        # the instance must be saved to call move_to
         instance = super(MenuItemForm, self).save()
-        
         # reorganize if necessary
         if self.cleaned_data['new_parent']:
             parent = self.cleaned_data['new_parent']
@@ -66,5 +68,4 @@ class MenuItemForm(forms.ModelForm):
                 node = parent 
                 position = 'last-child'
             instance.move_to(node, position=position)
-        
         return instance
