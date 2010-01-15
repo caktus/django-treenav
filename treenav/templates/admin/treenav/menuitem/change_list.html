@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+<noscript>
+    <a href="{% url treenav_refresh_hrefs %}"
+        title="Refresh all cached menu item HREFs in the database">
+        Refresh HREFs
+    </a>
+</noscript>
+{{ block.super }}
+<script type="text/javascript">
+jQuery('.object-tools').prepend('<li><a href="{% url treenav_refresh_hrefs %}" title="Refresh all cached menu item HREFs in the database">Refresh HREFs</a></li>');
+</script>
+{% endblock %}
