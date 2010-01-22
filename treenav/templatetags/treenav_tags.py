@@ -17,52 +17,33 @@ def copy_context(orig):
     return new
 
 
-
 class SingleLevelMenuNode(CaktNode):
     """
     Renders the nth-level items of a named Menu model object.
     """
-    def __init__(self, *args, **kwargs):
-        super(SingleLevelMenuNode, self).__init__(*args, **kwargs)
     
-    def __repr__(self):
-        return "<SingleLevelMenuNode>"
-    
-    def render_with_args(self, context, menu_name, level, suggestion=None):
-        menu = Menu.objects.get(name=menu_name)
-        children_context = copy_context(context)
-        children_context['menu_depth'] = level
-        children_context['skip_children'] = True
-        
-        if suggestion:
-            try:
-                node = MenuItem.objects.get(
-                    menu=menu,
-                    id=suggestion,
-                )
-            except MenuItem.DoesNotExist:
-                node = None
+    def render_with_args(self, context, slug, level):
+        level = int(level)
+        try:
+            menu = MenuItem.objects.get(slug=slug)
+        except MenuItem.DoesNotExist:
+            return ''
+        root = menu.to_tree()
+        active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        children_context = copy.copy(context)
+        if active_leaf:
+            context['active_menu_items'] = active_leaf.get_active_items()
+            if len(context['active_menu_items']) <= level:
+                return ''
+            children_context['menuitem'] = context['active_menu_items'][level]
+        elif level == 0:
+            children_context['menuitem'] = root
         else:
-            try:
-                node = MenuItem.objects.get(
-                    menu=menu,
-                    href=context['request'].META['PATH_INFO'],
-                )
-            except MenuItem.DoesNotExist:
-                node = None
-        
-        if node:
-            if level > (node.height() + 1) or level <= 0:
-                raise AttributeError('Invalid menu level %s' % level)
-            
-            # step up tree until we find wanted node height
-            while node.height() >= level:
-                node = node.up()
-        
-            children_context['menu_slug'] = node.slug
-            children_context['menu_items'] = node.get_children()
-        
-        return render_to_string('cms/menu.html', children_context)
+            print 'test'
+            return ''
+        children_context['full_tree'] = False
+        children_context['single_level'] = True
+        return render_to_string('treenav/menuitem.html', children_context)
 
 
 # Usage example:
@@ -86,7 +67,7 @@ class MenuNode(CaktNode):
         root = menu.to_tree()
         active_leaf = root.set_active(context['request'].META['PATH_INFO'])
         if active_leaf:
-            context['active_menu_items'] = active_leaf.get_ancestors()
+            context['active_menu_items'] = active_leaf.get_active_items()
         children_context = copy.copy(context)
         children_context['menuitem'] = root
         children_context['full_tree'] = ('True' == full_tree)

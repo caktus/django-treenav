@@ -1,9 +1,11 @@
 import pprint
 import time 
 
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 
+from django.http import HttpRequest
 from treenav.models import MenuItem
 from treenav.forms import MenuItemForm
 
@@ -11,6 +13,7 @@ from treenav.tests.models import Team
 
 
 class TreeNavTestCase(TestCase):
+    urls = 'treenav.tests.urls'
     def setUp(self):
         root = MenuItem.objects.create(
             label='Primary Navigation',
@@ -36,6 +39,38 @@ class TreeNavTestCase(TestCase):
             order=9,
         )
     
+    def testTagsLevel(self):
+        c = Client()
+        url = reverse('treenav.tests.urls.test_view',args=('home',))
+        response = c.post(url,{'pslug':'primary-nav', 'N':0} )
+        self.assertEquals(response.content.count('<li'),3)
+        self.assertContains(response,'depth-0')
+    
+    def testTagsNoPage(self):
+        c = Client()
+        url = reverse('treenav.tests.urls.test_view',args=('notthere',))
+        response = c.post(url,{'pslug':'primary-nav', 'N':0} )
+        self.assertEquals(response.content.count('<li'),3)
+        self.assertContains(response,'depth-0')
+    
+    def testTagsLevel2(self):
+        MenuItem.objects.create(
+            parent=MenuItem.objects.get(slug='about-us'),
+            label='Second Level',
+            slug='second-level',
+            order=10,
+        )
+        c = Client()
+        url = reverse('treenav.tests.urls.test_view',args=('home',))
+        response = c.post(url,{'pslug':'about-us', 'N':0} )
+        self.assertEquals(response.content.count('<li'),1)
+        
+    def testTagsImProper(self):
+        c = Client()
+        url = reverse('treenav.tests.urls.test_view',args=('home',))
+        response = c.post(url,{'pslug':'no-nav', 'N':10000} )
+        self.assertNotContains(response,'<ul')
+        
     def testHierarchy(self):
         root = MenuItem.objects.get(slug='primary-nav').to_tree()
         self.assertEqual(len(root.children), 3)

@@ -42,11 +42,11 @@ class Item(object):
                     leaf = child
             return leaf
     
-    def get_ancestors(self):
+    def get_active_items(self):
         if not self.parent:
-            return []
+            return [self]
         else:
-            return self.parent.get_ancestors() + [self]
+            return self.parent.get_active_items() + [self]
     
     def to_dict(self):
         return {
