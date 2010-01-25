@@ -39,7 +39,6 @@ class SingleLevelMenuNode(CaktNode):
         elif level == 0:
             children_context['menuitem'] = root
         else:
-            print 'test'
             return ''
         children_context['full_tree'] = False
         children_context['single_level'] = True
