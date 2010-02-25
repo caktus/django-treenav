@@ -26,21 +26,19 @@ class Item(object):
         self.children.append(item)
     
     def set_active(self, href):
+        active_node = None
         if self.node.href == href:
             self.active = True
             parent = self.parent
             while parent:
                 parent.active = True
                 parent = parent.parent
-            return self
-        else:
-            leaf = None
-            self.active = False
-            for child in self.children:
-                child = child.set_active(href)
-                if child:
-                    leaf = child
-            return leaf
+            active_node = self
+        for child in self.children:
+            child = child.set_active(href)
+            if child:
+                active_node = child
+        return active_node
     
     def get_active_items(self):
         if not self.parent:
