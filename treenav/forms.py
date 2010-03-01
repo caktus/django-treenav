@@ -73,3 +73,9 @@ class MenuItemForm(forms.ModelForm):
                 position = 'last-child'
             instance.move_to(node, position=position)
         return instance
+
+
+class GenericInlineMenuItemForm(forms.ModelForm):
+    class Meta:
+        model = MenuItem
+        fields = ('parent', 'label', 'slug', 'order', 'is_enabled')

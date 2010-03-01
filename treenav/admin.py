@@ -1,7 +1,19 @@
 from django.contrib import admin
+from django import forms
+from django.contrib.contenttypes import generic
 
 from treenav import models as treenav
-from treenav.forms import MenuItemForm
+from treenav.forms import MenuItemForm, GenericInlineMenuItemForm
+
+
+class GenericMenuItemInline(generic.GenericStackedInline):
+    """
+    Add this inline to your admin class to support editing related menu items
+    from that model's admin page.
+    """
+    max_num = 1
+    model = treenav.MenuItem
+    form = GenericInlineMenuItemForm
 
 
 class SubMenuItemInline(admin.TabularInline):
