@@ -29,7 +29,10 @@ class SingleLevelMenuNode(CaktNode):
         except MenuItem.DoesNotExist:
             return ''
         root = menu.to_tree()
-        active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        if 'request' in context:
+            active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        else:
+            active_leaf = None
         children_context = copy.copy(context)
         if active_leaf:
             context['active_menu_items'] = active_leaf.get_active_items()
@@ -64,7 +67,10 @@ class MenuNode(CaktNode):
         except MenuItem.DoesNotExist:
             return ''
         root = menu.to_tree()
-        active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        if 'request' in context:
+            active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        else:
+            active_leaf = None
         if active_leaf:
             context['active_menu_items'] = active_leaf.get_active_items()
         children_context = copy.copy(context)
