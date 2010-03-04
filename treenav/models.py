@@ -111,13 +111,13 @@ class MenuItem(models.Model):
     
     def to_tree(self):
         item = root = Item(self)
-        for prev, curr, next in previous_current_next(self.get_descendants()):
+        descendents = self.get_descendants().filter(is_enabled=True)
+        for prev, curr, next in previous_current_next(descendents):
             previous_item = item
             item = Item(curr)
             if not prev or prev.level < curr.level:
                 previous_item.add_child(item)
             elif prev and prev.level > curr.level:
-                diff = prev.level - curr.level
                 parent = previous_item
                 while parent.node.level >= curr.level:
                     parent = parent.parent
