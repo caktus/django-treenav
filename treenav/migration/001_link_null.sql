@@ -1,0 +1,1 @@
+ALTER TABLE treenav_menuitem ALTER COLUMN slug SET NOT NULL;
