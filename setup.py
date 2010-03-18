@@ -1,11 +1,6 @@
 import os
 from setuptools import setup, find_packages
 
-packages = find_packages()
-packages += [
-    'treenav.templates',
-    'treenav.templates.treenav',
-]
 setup(
     name='django-treenav',
     version='0.0.0',
