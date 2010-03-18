@@ -94,7 +94,6 @@ class MenuItem(models.Model):
         _('link'),
         max_length=255,
         help_text="The view of the page you want to link to, as a python path or the shortened URL name.",
-        null=True,
         blank=True,
     )
     content_type = models.ForeignKey(
