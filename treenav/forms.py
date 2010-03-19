@@ -23,7 +23,7 @@ class MenuItemForm(forms.ModelForm):
     
     def clean_link(self):
         link = self.cleaned_data['link']
-        if link and not link[0] == '/':
+        if link and not link[0] in ('^', '/'):
             try:
                 reverse(link)
             except NoReverseMatch:

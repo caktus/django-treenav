@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -22,12 +24,23 @@ class Item(object):
         return str(self.node)
     
     def add_child(self, item):
+        if hasattr(self, '_enabled_children'):
+            del self._enabled_children
         item.parent = self
         self.children.append(item)
     
+    @property
+    def enabled_children(self):
+        children = getattr(self, '_enabled_children', None)
+        if children is None:
+            children = [c for c in self.children if c.node.is_enabled]
+            self._enabled_children = children
+        return children
+    
     def set_active(self, href):
         active_node = None
-        if self.node.href == href:
+        if (self.node.href.startswith('^') and
+            re.match(self.node.href, href)) or self.node.href == href:
             self.active = True
             parent = self.parent
             while parent:
@@ -110,7 +123,7 @@ class MenuItem(models.Model):
     
     def to_tree(self):
         item = root = Item(self)
-        descendents = self.get_descendants().filter(is_enabled=True)
+        descendents = self.get_descendants()
         for prev, curr, next in previous_current_next(descendents):
             previous_item = item
             item = Item(curr)
@@ -127,7 +140,7 @@ class MenuItem(models.Model):
     
     def save(self, *args, **kwargs):
         if self.link:
-            if self.link.startswith('/'):
+            if self.link[0] in ('^', '/'):
                 self.href = self.link
             else:
                 self.href = reverse(self.link)
