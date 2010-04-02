@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.db.models.query import QuerySet
 
 import mptt
 from mptt.utils import previous_current_next
@@ -67,6 +68,28 @@ class Item(object):
         }
 
 
+def delete_cache():
+    cache.delete('menus')
+    for menu in MenuItem.objects.all():
+        cache.delete('menu-%s' % menu.slug)
+        cache.delete('menu-tree-%s' % menu.slug)
+
+
+class MenuUnCacheQuerySet(QuerySet):
+    def delete(self, *args, **kwargs):
+        delete_cache()
+        super(MenuUnCacheQuerySet, self).delete(*args, **kwargs)
+        
+    def update(self, *args, **kwargs):
+        delete_cache()
+        super(MenuUnCacheQuerySet, self).update(*args, **kwargs)
+
+    
+class MenuItemManager(models.Manager):
+    def get_query_set(self):    
+        return MenuUnCacheQuerySet(self.model)
+
+    
 class MenuItem(models.Model):
     ORDER_CHOICES = (
         (0, 0),
@@ -120,22 +143,27 @@ class MenuItem(models.Model):
     )
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     href = models.CharField(_('href'), editable=False, max_length=255)
+    objects = MenuItemManager()
     
     def to_tree(self):
-        item = root = Item(self)
-        descendents = self.get_descendants()
-        for prev, curr, next in previous_current_next(descendents):
-            previous_item = item
-            item = Item(curr)
-            if not prev or prev.level < curr.level:
-                previous_item.add_child(item)
-            elif prev and prev.level > curr.level:
-                parent = previous_item
-                while parent.node.level >= curr.level:
-                    parent = parent.parent
-                parent.add_child(item)
-            else:
-                previous_item.parent.add_child(item)
+        cache_key = 'menu-tree-%s' % self.slug
+        root = cache.get(cache_key)
+        if not root:
+            item = root = Item(self)
+            descendents = self.get_descendants()
+            for prev, curr, next in previous_current_next(descendents):
+                previous_item = item
+                item = Item(curr)
+                if not prev or prev.level < curr.level:
+                    previous_item.add_child(item)
+                elif prev and prev.level > curr.level:
+                    parent = previous_item
+                    while parent.node.level >= curr.level:
+                        parent = parent.parent
+                    parent.add_child(item)
+                else:
+                    previous_item.parent.add_child(item)
+            cache.set(cache_key, root)
         return root
     
     def save(self, *args, **kwargs):
@@ -148,7 +176,12 @@ class MenuItem(models.Model):
             self.href = self.content_object.get_absolute_url()
         else:
             self.href = ''
+        delete_cache()
         super(MenuItem, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        delete_cache()
+        super(MenuItem, self).delete(*args, **kwargs)
     
     def __unicode__(self):
         return self.slug

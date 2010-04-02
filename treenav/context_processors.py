@@ -1,8 +1,12 @@
 from treenav.models import MenuItem
+from django.core.cache import cache
 
 
 def treenav_active(request):
-    menus = MenuItem.objects.filter(parent__isnull=True).all()
+    menus = cache.get('menus')
+    if not menus:
+        menus = MenuItem.objects.filter(parent__isnull=True).all()
+        cache.set('menus', menus)
     treenav_active = {}
     for menu in menus:
         root = menu.to_tree()

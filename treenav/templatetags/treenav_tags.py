@@ -3,6 +3,8 @@ import copy
 from django import template
 from django.template.loader import render_to_string
 
+from django.core.cache import cache
+
 from treenav.templatetags import CaktNode, parse_args_kwargs
 from treenav.models import MenuItem
 
@@ -17,6 +19,18 @@ def copy_context(orig):
     return new
 
 
+def get_menu_item(slug):
+    cache_key = 'menu-%s' % slug
+    menu = cache.get(cache_key)
+    if not menu:
+        try:
+            menu = MenuItem.objects.get(slug=slug)
+        except MenuItem.DoesNotExist:
+            menu = None
+        cache.set(cache_key)
+    return menu
+
+
 class SingleLevelMenuNode(CaktNode):
     """
     Renders the nth-level items of a named Menu model object.
@@ -24,9 +38,8 @@ class SingleLevelMenuNode(CaktNode):
     
     def render_with_args(self, context, slug, level):
         level = int(level)
-        try:
-            menu = MenuItem.objects.get(slug=slug)
-        except MenuItem.DoesNotExist:
+        menu = get_menu_item(slug)
+        if not menu:
             return ''
         root = menu.to_tree()
         if 'request' in context:
@@ -62,9 +75,8 @@ class MenuNode(CaktNode):
     """
     
     def render_with_args(self, context, slug, full_tree=False):
-        try:
-            menu = MenuItem.objects.get(slug=slug)
-        except MenuItem.DoesNotExist:
+        menu = get_menu_item(slug)
+        if not menu:
             return ''
         root = menu.to_tree()
         if 'request' in context:
