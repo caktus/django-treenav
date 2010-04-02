@@ -27,7 +27,7 @@ def get_menu_item(slug):
             menu = MenuItem.objects.get(slug=slug)
         except MenuItem.DoesNotExist:
             menu = None
-        cache.set(cache_key)
+        cache.set(cache_key, menu)
     return menu
 
 
