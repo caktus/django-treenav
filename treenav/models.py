@@ -145,6 +145,9 @@ class MenuItem(models.Model):
     href = models.CharField(_('href'), editable=False, max_length=255)
     objects = MenuItemManager()
     
+    class Meta:
+        ordering = ('tree_id', 'lft')
+    
     def to_tree(self):
         cache_key = 'menu-tree-%s' % self.slug
         root = cache.get(cache_key)

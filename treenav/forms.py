@@ -4,11 +4,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 
 from treenav.models import MenuItem
+from mptt.forms import TreeNodeChoiceField
 
 
 class MenuItemForm(forms.ModelForm):
-    new_parent = forms.ModelChoiceField(
-        queryset=MenuItem.objects.all(),
+    new_parent = TreeNodeChoiceField(
+        queryset=MenuItem.tree.all(),
         required=False,
     )
     
@@ -76,6 +77,9 @@ class MenuItemForm(forms.ModelForm):
 
 
 class GenericInlineMenuItemForm(forms.ModelForm):
+    parent = TreeNodeChoiceField(
+        queryset=MenuItem.tree.all()
+    )
     class Meta:
         model = MenuItem
         fields = ('parent', 'label', 'slug', 'order', 'is_enabled')
