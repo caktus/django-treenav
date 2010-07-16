@@ -26,7 +26,7 @@ class SubMenuItemInline(admin.TabularInline):
 
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = (
-        'depth_str',
+        'menu_items',
         'slug',
         'label',
         'parent',
@@ -48,15 +48,14 @@ class MenuItemAdmin(admin.ModelAdmin):
             'description': "Link for this menu item, which can be one of: absolute URL, named URL, or a generic relation using get_absolute_url()"
         }),
     )
-    #ordering = ('-parent', 'order',)
     list_editable = ('label',)
     form = MenuItemForm
     
-    def depth_str(self, obj):
+    def menu_items(self, obj):
         if obj.level == 0:
             return obj.label
         return '&nbsp;&nbsp;&nbsp;'*obj.level + '- %s' % obj.label
-    depth_str.allow_tags = True
+    menu_items.allow_tags = True
     
     def href_link(self, obj):
         return '<a href="%s">%s</a>' % (obj.href, obj.href)

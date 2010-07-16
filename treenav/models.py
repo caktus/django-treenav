@@ -146,7 +146,7 @@ class MenuItem(models.Model):
     objects = MenuItemManager()
     
     class Meta:
-        ordering = ('tree_id', 'lft')
+        ordering = ('lft', 'tree_id')
     
     def to_tree(self):
         cache_key = 'menu-tree-%s' % self.slug
