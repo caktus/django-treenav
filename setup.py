@@ -19,5 +19,5 @@ setup(
     url='http://code.google.com/p/django-treenav/',
     license='LICENSE.txt',
     description='Extensible, hierarchical, and pluggable navigation system for Django sites.',
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
 )
