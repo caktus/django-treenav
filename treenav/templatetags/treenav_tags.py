@@ -1,22 +1,15 @@
 import copy
 
 from django import template
-from django.template.loader import render_to_string
-
 from django.core.cache import cache
+from django.template.loader import render_to_string
+from django.template import RequestContext, Context
 
-from treenav.templatetags import CaktNode, parse_args_kwargs
 from treenav.models import MenuItem
+from treenav.templatetags import CaktNode, parse_args_kwargs
 
 
 register = template.Library()
-
-
-def copy_context(orig):
-    new = {}
-    for key in ['PATH_INFO']:
-        new['request'][key] = orig['request'][key]
-    return new
 
 
 def get_menu_item(slug):
@@ -31,6 +24,14 @@ def get_menu_item(slug):
     return menu
 
 
+def new_context(parent_context):
+    """ Create new context rather than modifying parent context """
+    if 'request' in parent_context:
+        return RequestContext(parent_context['request'])
+    else:
+        return Context()
+
+
 class SingleLevelMenuNode(CaktNode):
     """
     Renders the nth-level items of a named Menu model object.
@@ -41,24 +42,25 @@ class SingleLevelMenuNode(CaktNode):
         menu = get_menu_item(slug)
         if not menu:
             return ''
+        parent_context = context
+        context = new_context(parent_context)
         root = menu.to_tree()
         if 'request' in context:
             active_leaf = root.set_active(context['request'].META['PATH_INFO'])
         else:
             active_leaf = None
-        children_context = copy.copy(context)
         if active_leaf:
             context['active_menu_items'] = active_leaf.get_active_items()
             if len(context['active_menu_items']) <= level:
                 return ''
-            children_context['menuitem'] = context['active_menu_items'][level]
+            context['menuitem'] = context['active_menu_items'][level]
         elif level == 0:
-            children_context['menuitem'] = root
+            context['menuitem'] = root
         else:
             return ''
-        children_context['full_tree'] = False
-        children_context['single_level'] = True
-        return render_to_string('treenav/menuitem.html', children_context)
+        context['full_tree'] = False
+        context['single_level'] = True
+        return render_to_string('treenav/menuitem.html', context)
 
 
 # Usage example:
@@ -75,6 +77,9 @@ class MenuNode(CaktNode):
     """
     
     def render_with_args(self, context, slug, full_tree=False):
+        # don't modify the parent context
+        parent_context = context
+        context = new_context(parent_context)
         menu = get_menu_item(slug)
         if not menu:
             return ''
@@ -85,10 +90,9 @@ class MenuNode(CaktNode):
             active_leaf = None
         if active_leaf:
             context['active_menu_items'] = active_leaf.get_active_items()
-        children_context = copy.copy(context)
-        children_context['menuitem'] = root
-        children_context['full_tree'] = ('True' == full_tree)
-        return render_to_string('treenav/menuitem.html', children_context)
+        context['menuitem'] = root
+        context['full_tree'] = ('True' == full_tree)
+        return render_to_string('treenav/menuitem.html', context)
 
 # Usage example:
 # {% menu "main" %}
@@ -107,10 +111,11 @@ class RenderMenuChildrenNode(template.Node):
         self.item = template.Variable(item)
         
     def render(self, context):
-        item = self.item.resolve(context)
-        children_context = copy.copy(context)
-        children_context['menuitem'] = item
-        return render_to_string('treenav/menuitem.html', children_context)
+        parent_context = context
+        item = self.item.resolve(parent_context)
+        context = new_context(parent_context)
+        context['menuitem'] = item
+        return render_to_string('treenav/menuitem.html', context)
 
 # Usage example:
 # {% menu_item_status item %}
