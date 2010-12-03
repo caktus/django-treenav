@@ -7,7 +7,7 @@ setup(
     author_email='solutions@caktusgroup.com',
     packages=find_packages(exclude=['sample_project']),
     include_package_data=True,
-    url='http://http://github.com/caktus/django-treenav',
+    url='http://github.com/caktus/django-treenav',
     license='LICENSE.txt',
     description='Extensible, hierarchical, and pluggable navigation system '
                 'for Django sites',
