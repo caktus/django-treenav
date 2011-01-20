@@ -153,7 +153,7 @@ class MenuItem(models.Model):
         root = cache.get(cache_key)
         if not root:
             item = root = Item(self)
-            descendents = self.get_descendants()
+            descendents = self.get_descendants().order_by('level', 'order')
             for prev, curr, next in previous_current_next(descendents):
                 previous_item = item
                 item = Item(curr)
