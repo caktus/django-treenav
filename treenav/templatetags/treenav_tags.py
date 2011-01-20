@@ -124,3 +124,27 @@ class RenderMenuChildrenNode(template.Node):
 def do_render_menu_children(parser, token):
     menu_path = token.split_contents()
     return RenderMenuChildrenNode(menu_path[1])
+
+
+class ActiveMenuItemsNode(CaktNode):
+    def render_with_args(self, context, slug):
+        parent_context = context
+        context = new_context(parent_context)
+        menu = get_menu_item(slug)
+        if not menu:
+            return ''
+        root = menu.to_tree()
+        if 'request' in context:
+            active_leaf = root.set_active(context['request'].META['PATH_INFO'])
+        else:
+            active_leaf = None
+        if active_leaf:
+            context['active_menu_items'] = active_leaf.get_active_items()
+        return render_to_string('treenav/menucrumbs.html', context)
+
+
+@register.tag()
+def show_menu_crumbs(parser, token):
+    tag_name, args, kwargs = parse_args_kwargs(parser, token)
+    return ActiveMenuItemsNode(*args, **kwargs)
+   
