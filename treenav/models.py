@@ -171,7 +171,9 @@ class MenuItem(models.Model):
     
     def save(self, *args, **kwargs):
         if self.link:
-            if self.link[0] in ('^', '/'):
+            if self.link[0] in ('^', '/') \
+                    or self.link.startswith('http://') \
+                    or self.link.startswith('https://'):
                 self.href = self.link
             else:
                 self.href = reverse(self.link)
