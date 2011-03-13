@@ -22,22 +22,23 @@ class MenuItemForm(forms.ModelForm):
         if self.instance.pk:
             self.fields['new_parent'].queryset = \
                 MenuItem.objects.exclude(pk=self.instance.pk)
-    
+
     def clean_link(self):
-        link = self.cleaned_data['link']
-        # It could be a fully-qualified URL -- try that first b/c reverse() chokes on "http://"
-        try:
+        link = self.cleaned_data['link'] or ''
+        # It could be a fully-qualified URL -- try that first b/c reverse()
+        # chokes on "http://"
+        if any([link.startswith(s) for s in ('http://', 'https://')]):
             URLValidator()(link)
-        except ValidationError:
-            # Not a fully-qualified URL
-            if link and not link[0] in ('^', '/'):
-                # Not a regex or site-root-relative absolute path -- see if it's a named URL or view
-                try:
-                    reverse(link)
-                except NoReverseMatch:
-                    raise forms.ValidationError('URL pattern name or view not found; is not fully-qualified URL')
-        return self.cleaned_data['link']
-    
+        elif link and not any([link.startswith(s) for s in ('^', '/')]):
+            # Not a regex or site-root-relative absolute path -- see if it's a
+            # named URL or view
+            try:
+                reverse(link)
+            except NoReverseMatch:
+                raise forms.ValidationError('Please supply a valid URL, URL '
+                                            'name, or regular expression.')
+        return link
+
     def clean(self):
         content_type = self.cleaned_data['content_type']
         object_id = self.cleaned_data['object_id']

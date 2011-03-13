@@ -170,10 +170,9 @@ class MenuItem(models.Model):
         return root
     
     def save(self, *args, **kwargs):
+        ignored_url_prefixes = ('^', '/', 'http://', 'https://')
         if self.link:
-            if self.link[0] in ('^', '/') \
-                    or self.link.startswith('http://') \
-                    or self.link.startswith('https://'):
+            if any([self.link.startswith(s) for s in ignored_url_prefixes]):
                 self.href = self.link
             else:
                 self.href = reverse(self.link)

@@ -45,7 +45,11 @@ class MenuItemAdmin(admin.ModelAdmin):
         }),
         ('URL', {
             'fields': ('link', ('content_type', 'object_id')),
-            'description': "Link for this menu item, which can be one of: absolute URL, named URL, or a generic relation using get_absolute_url()"
+            'description': "The URL for this menu item, which can be a "
+                           "fully qualified URL, an absolute URL, a named "
+                           "URL, a path to a Django view, a regular "
+                           "expression, or a generic relation to a model that "
+                           "supports get_absolute_url()"
         }),
     )
     list_editable = ('label',)
