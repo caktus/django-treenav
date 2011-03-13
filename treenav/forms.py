@@ -55,6 +55,13 @@ class MenuItemForm(forms.ModelForm):
                 obj.get_absolute_url()
             except AttributeError, e:
                 raise forms.ValidationError(str(e))
+        
+        if 'is_enabled' in self.cleaned_data and \
+          self.cleaned_data['is_enabled'] and \
+          'link' in self.cleaned_data and \
+          self.cleaned_data['link'].startswith('^'):
+            raise forms.ValidationError('Menu items with regular expression '
+                                        'URLs must be disabled.')
         return self.cleaned_data
     
     def save(self, commit=True):
