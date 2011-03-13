@@ -26,6 +26,8 @@ class Team(models.Model):
 
 class TreeNavTestCase(TestCase):
 
+    urls = 'treenav.tests.urls'
+
     def setUp(self):
         self.root = MenuItem.objects.create(
             label='Primary Navigation',
