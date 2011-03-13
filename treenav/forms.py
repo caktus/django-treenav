@@ -1,7 +1,8 @@
 from django import forms
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.validators import URLValidator
 
 from treenav.models import MenuItem
 from mptt.forms import TreeNodeChoiceField
@@ -24,11 +25,17 @@ class MenuItemForm(forms.ModelForm):
     
     def clean_link(self):
         link = self.cleaned_data['link']
-        if link and not link[0] in ('^', '/'):
-            try:
-                reverse(link)
-            except NoReverseMatch:
-                raise forms.ValidationError('URL pattern name or view not found')
+        # It could be a fully-qualified URL -- try that first b/c reverse() chokes on "http://"
+        try:
+            URLValidator()(link)
+        except ValidationError:
+            # Not a fully-qualified URL
+            if link and not link[0] in ('^', '/'):
+                # Not a regex or site-root-relative absolute path -- see if it's a named URL or view
+                try:
+                    reverse(link)
+                except NoReverseMatch:
+                    raise forms.ValidationError('URL pattern name or view not found; is not fully-qualified URL')
         return self.cleaned_data['link']
     
     def clean(self):
