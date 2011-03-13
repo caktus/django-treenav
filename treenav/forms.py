@@ -37,7 +37,7 @@ class MenuItemForm(forms.ModelForm):
             except NoReverseMatch:
                 raise forms.ValidationError('Please supply a valid URL, URL '
                                             'name, or regular expression.')
-        return link
+        return self.cleaned_data['link']
 
     def clean(self):
         content_type = self.cleaned_data['content_type']
