@@ -1,7 +1,7 @@
 from django import forms
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import URLValidator
 
 from treenav.models import MenuItem
