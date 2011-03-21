@@ -5,10 +5,9 @@
 
 .. include:: ../README.rst
 
-Welcome to Django Treenav's documentation!
-==========================================
 
-Contents:
+Contents
+=========
 
 .. toctree::
    :maxdepth: 2
