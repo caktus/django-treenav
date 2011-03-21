@@ -3,4 +3,5 @@
 .DS\_Store
 sample_project/*.db
 *.egg-info
+_build
 
