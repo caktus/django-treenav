@@ -12,7 +12,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-
+    
+   setup
+        
 Indices and tables
 ==================
 
