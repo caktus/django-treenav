@@ -19,27 +19,29 @@ Requirements
 
 Installation
 ============
-1) Download the app from GitHub and add it to your Python path:
+#. Download the app from GitHub and add it to your Python path:
 
-::
+    ::
 
-    git clone git://github.com/caktus/django-treenav.git
+        git clone git://github.com/caktus/django-treenav.git
 
-2) Add to your INSTALLED_APPS and run syncdb
 
-::
+#. Add to your INSTALLED_APPS and run syncdb
 
-    INSTALLED_APPS = (
-        ...,
-        'mptt',
-        'treenav',
-    )
+    ::
+
+        INSTALLED_APPS = (
+            ...,
+            'mptt',
+            'treenav',
+        )
 
 
 Setup
 =====
-1) Login to the admin and build your menu item hierarchy
-2) Load the treenav_tags in your template and render the menu, e.g.
+#. Login to the admin and build your menu item hierarchy
+#. Load the treenav_tags in your template and render the menu where the 
+   show_treenav argument is the slug of the top level menu item e.g.
 
     ::
 
@@ -47,7 +49,7 @@ Setup
         {% show_treenav 'primary-nav' %}
 
 
-3) Add treenav urls into your url patterns, e.g.
+#. Add treenav urls into your url patterns, e.g.
 
     ::
 
