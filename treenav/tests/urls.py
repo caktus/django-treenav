@@ -15,9 +15,9 @@ def test_view(request, item_slug):
 
 urlpatterns = patterns(
     '',
-    url(r'item/(?P<item_slug>[\w-]+)/$',
+    url(r'^item/(?P<item_slug>[\w-]+)/$',
         test_view, 
         name='test_view',
     ),
-    (r'^', include('treenav.urls.undefined_url')),
+    (r'^old/', include('treenav.urls.undefined_url')),
 )

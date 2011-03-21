@@ -7,7 +7,7 @@ from django.template import compile_string, TemplateSyntaxError, StringOrigin
 from django.contrib.contenttypes.models import ContentType
 
 from treenav.context_processors import treenav_active
-from treenav.models import MenuItem
+from treenav.models import MenuItem, Item
 from treenav.forms import MenuItemForm
 
 # per http://code.djangoproject.com/ticket/7835#comment:24,
@@ -29,29 +29,31 @@ class TreeNavTestCase(TestCase):
     urls = 'treenav.tests.urls'
 
     def setUp(self):
-        self.root = MenuItem.objects.create(
-            label='Primary Navigation',
-            slug='primary-nav',
-            order=0,
-        )
-        MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
-            label='Our Blog',
-            slug='our-blog',
-            order=4,
-        )
-        MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
-            label='Home',
-            slug='home',
-            order=0,
-        )
-        MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
-            label='About Us',
-            slug='about-us',
-            order=9,
-        )
+        form = MenuItemForm({
+            'label': 'Primary Navigation',
+            'slug': 'primary-nav',
+            'order': 0,
+        })
+        self.root = form.save()
+        MenuItemForm({
+            'parent_id': MenuItem.objects.get(slug='primary-nav').pk,
+            'label': 'Our Blog',
+            'slug': 'our-blog',
+            'order': 4,
+        }).save()
+        MenuItemForm({
+            'parent_id': MenuItem.objects.get(slug='primary-nav').pk,
+            'label': 'Home',
+            'slug': 'home',
+            'order': 0,
+        }).save()
+        self.child = MenuItemForm({
+            'parent_id': MenuItem.objects.get(slug='primary-nav').pk,
+            'label': 'Abot Us',
+            'slug': 'about-us',
+            'order': 9,
+        }).save()
+        
     
     def test_treenav_active(self):
         request = HttpRequest()
@@ -107,7 +109,18 @@ class TreeNavTestCase(TestCase):
         team.save()
         menu = MenuItem.objects.get(slug='durham-bulls')
         self.assertEqual(menu.href, team.get_absolute_url())
-
+        
+    def test_active_url(self):
+        team = Team.objects.create(slug='durham-bulls')
+        ct = ContentType.objects.get(app_label='treenav', model='team')
+        self.child.object_id = team.pk
+        self.child.content_type = ct
+        self.child.content_object = team
+        self.child.save()
+        item = Item(self.child)
+        active_item = item.set_active(team.get_absolute_url())
+        self.assertEquals(active_item.node, self.child)
+        
 
 class TreeNavViewTestCase(TestCase):
 
@@ -131,7 +144,7 @@ class TreeNavViewTestCase(TestCase):
             slug='home',
             order=0,
         )
-        MenuItem.objects.create(
+        self.child = MenuItem.objects.create(
             parent=MenuItem.objects.get(slug='primary-nav'),
             label='About Us',
             slug='about-us',
@@ -176,3 +189,14 @@ class TreeNavViewTestCase(TestCase):
         children = ('Home', 'Our Blog', 'About Us')
         for item, expected_label in zip(root.children, children):
             self.assertEqual(item.node.label, expected_label)
+
+    def test_undefined_url(self):
+        """
+        Testing the undefined_url view.
+        """
+        slug = self.child.slug
+        url = reverse('treenav_undefined_url', args=[slug,])
+        c = Client()
+        response = c.get(url)
+        self.assertEquals(response.status_code, 404)
+

@@ -78,7 +78,7 @@ class MenuItemForm(forms.ModelForm):
             parent = self.cleaned_data['new_parent']
         else:
             parent = instance.parent
-        if parent:
+        if parent:# pragma: no cover
             try:
                 node = parent.get_children().order_by('order').filter(
                     order__gte=instance.order
