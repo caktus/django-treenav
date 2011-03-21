@@ -13,7 +13,8 @@ Contents
    :maxdepth: 2
     
    setup
-        
+   template_tags
+   
 Indices and tables
 ==================
 

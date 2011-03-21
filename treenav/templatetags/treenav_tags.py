@@ -94,8 +94,6 @@ class MenuNode(CaktNode):
         context['full_tree'] = ('True' == full_tree)
         return render_to_string('treenav/menuitem.html', context)
 
-# Usage example:
-# {% menu "main" %}
     
 @register.tag(name='show_treenav')
 def show_treenav(parser, token):
@@ -117,8 +115,6 @@ class RenderMenuChildrenNode(template.Node):
         context['menuitem'] = item
         return render_to_string('treenav/menuitem.html', context)
 
-# Usage example:
-# {% menu_item_status item %}
 
 @register.tag(name='render_menu_children')
 def do_render_menu_children(parser, token):

@@ -14,6 +14,8 @@ Features
 
 Requirements
 ------------
+- `django
+  <https://github.com/django/django/>`_
 - `django-mptt
   <http://code.google.com/p/django-mptt/>`_
 
