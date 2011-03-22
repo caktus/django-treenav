@@ -5,7 +5,7 @@ The tag single_level_menu uses it as well but only has one level of lists.
 
 Output for Menus.
 -----------------
-
+.. highlight:: html
 ::
 
     <ul id="menu-primary-nav" class="menu depth-0">   

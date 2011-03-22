@@ -6,7 +6,7 @@ template tags.  Currently treenav offers four template tags to use.
 
 Show Treenav
 ------------
-
+.. highlight:: html+django
 ::
 
     {% show_treenav "top-level-slug" %}

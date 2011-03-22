@@ -3,6 +3,8 @@ django-treenav
 
 Extensible, hierarchical, and pluggable navigation system for Django sites
 
+.. highlight:: html
+
 Features
 --------
 
@@ -21,16 +23,12 @@ Requirements
 
 Installation
 ------------
-#.  Install the app with pip:
-
-    ::
+#.  Install the app with pip::
 
         pip install django-treenav
 
 
-#. Add to your INSTALLED_APPS and run syncdb
-
-    ::
+#. Add to your INSTALLED_APPS and run syncdb::
 
         INSTALLED_APPS = (
             ...,
