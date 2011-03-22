@@ -15,7 +15,6 @@ Contents
     
    setup
    template_tags
-   html
    motivation
    
 Indices and tables
