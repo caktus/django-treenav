@@ -21,7 +21,7 @@ Requirements
 
 Installation
 ------------
-#. Download the app from GitHub and add it to your Python path:
+#.  Install the app with pip:
 
     ::
 
