@@ -14,6 +14,7 @@ Contents
     
    setup
    template_tags
+   html
    
 Indices and tables
 ==================
