@@ -9,7 +9,9 @@
 </noscript>
 {{ block.super }}
 <script type="text/javascript">
-jQuery('.object-tools').prepend('<li><a href="{% url treenav_refresh_hrefs %}" title="Refresh all cached menu item HREFs in the database">Refresh HREFs</a></li>');
-jQuery('.object-tools').prepend('<li><a href="{% url treenav_clean_cache %}" title="Remove all MenuItems from Cache.">Clean Menu Cache</a></li>');
+(function($) {
+  $('.object-tools').prepend('<li><a href="{% url treenav_refresh_hrefs %}" title="Refresh all cached menu item HREFs in the database">Refresh HREFs</a></li>');
+  $('.object-tools').prepend('<li><a href="{% url treenav_clean_cache %}" title="Remove all MenuItems from Cache.">Clean Menu Cache</a></li>');
+})(django.jQuery);
 </script>
 {% endblock %}
