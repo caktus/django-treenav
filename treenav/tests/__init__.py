@@ -36,19 +36,19 @@ class TreeNavTestCase(TestCase):
         })
         self.root = form.save()
         MenuItemForm({
-            'parent_id': MenuItem.objects.get(slug='primary-nav').pk,
+            'parent': MenuItem.objects.get(slug='primary-nav').pk,
             'label': 'Our Blog',
             'slug': 'our-blog',
             'order': 4,
         }).save()
         MenuItemForm({
-            'parent_id': MenuItem.objects.get(slug='primary-nav').pk,
+            'parent': MenuItem.objects.get(slug='primary-nav').pk,
             'label': 'Home',
             'slug': 'home',
             'order': 0,
         }).save()
         self.child = MenuItemForm({
-            'parent_id': MenuItem.objects.get(slug='primary-nav').pk,
+            'parent': MenuItem.objects.get(slug='primary-nav').pk,
             'label': 'Abot Us',
             'slug': 'about-us',
             'order': 9,
@@ -65,7 +65,7 @@ class TreeNavTestCase(TestCase):
     
     def compile_string(self, url, template_str):
         origin = StringOrigin(url)
-        compiled = compile_string(template_str, origin).render(Context())
+        return compile_string(template_str, origin).render(Context())
         
     def test_single_level_menu(self):    
         template_str = """{% load treenav_tags %}
@@ -77,19 +77,31 @@ class TreeNavTestCase(TestCase):
         template_str = """{% load treenav_tags %}
         {% show_treenav "primary-nav" %}
         """
-        self.compile_string("/", template_str)
+        compiled = self.compile_string("/", template_str)
 
-    def test_show_treenav(self):    
+    def test_render_menu_children(self):    
         template_str = """{% load treenav_tags %}
         {% render_menu_children "primary-nav" %}
         """
         self.compile_string("/", template_str)
 
-    def test_show_treenav(self):    
+    def test_show_menu_crumbs(self):    
         template_str = """{% load treenav_tags %}
         {% show_menu_crumbs "about-us" %}
         """
-        self.compile_string("/", template_str)
+        team = Team.objects.create(slug='durham-bulls')
+        ct = ContentType.objects.get(app_label='treenav', model='team')
+        form = MenuItemForm({
+            'parent': MenuItem.objects.get(slug='primary-nav').pk,
+            'label': 'Durham Bulls',
+            'slug': 'durham-bulls',
+            'order': 4,
+            'content_type': ct.id,
+            'object_id': team.pk,
+        })
+        form.save()
+        compiled = self.compile_string(team.get_absolute_url(), template_str)
+
 
     def test_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
