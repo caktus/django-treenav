@@ -25,7 +25,7 @@ Installation
 
     ::
 
-        git clone git://github.com/caktus/django-treenav.git
+        pip install django-treenav
 
 
 #. Add to your INSTALLED_APPS and run syncdb
