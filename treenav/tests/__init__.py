@@ -62,20 +62,34 @@ class TreeNavTestCase(TestCase):
         
     def test_to_tree(self):
         self.root.to_tree()
+    
+    def compile_string(self, url, template_str):
+        origin = StringOrigin(url)
+        compiled = compile_string(template_str, origin).render(Context())
         
     def test_single_level_menu(self):    
         template_str = """{% load treenav_tags %}
         {% single_level_menu "primary-nav" 0 %}
         """
-        origin = StringOrigin('/')
-        compiled = compile_string(template_str, origin).render(Context())
+        self.compile_string("/", template_str)
         
     def test_show_treenav(self):    
         template_str = """{% load treenav_tags %}
         {% show_treenav "primary-nav" %}
         """
-        origin = StringOrigin('/')
-        compiled = compile_string(template_str, origin).render(Context())
+        self.compile_string("/", template_str)
+
+    def test_show_treenav(self):    
+        template_str = """{% load treenav_tags %}
+        {% render_menu_children "primary-nav" %}
+        """
+        self.compile_string("/", template_str)
+
+    def test_show_treenav(self):    
+        template_str = """{% load treenav_tags %}
+        {% show_menu_crumbs "about-us" %}
+        """
+        self.compile_string("/", template_str)
 
     def test_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
