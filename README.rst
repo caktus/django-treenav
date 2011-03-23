@@ -3,7 +3,7 @@ django-treenav
 
 Extensible, hierarchical, and pluggable navigation system for Django sites
 
-.. highlight:: html
+.. highlight:: python
 
 Features
 --------
