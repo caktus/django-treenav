@@ -5,3 +5,5 @@ sample_project/*.db
 *.egg-info
 _build
 build
+.coverage
+report.txt

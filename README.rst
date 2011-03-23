@@ -36,5 +36,21 @@ Installation
             'treenav',
         )
 
+
+#. Include these context processors::
+
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        "django.core.context_processors.request",
+        "treenav.context_processors.treenav_active",
+    )
+
+
+#. Add these urls::
+
+    urlpatterns = patterns('',
+        (r'^treenav/', include('treenav.urls.admin')),
+        (r'^treenav-missing/', include('treenav.urls.undefined_url')),
+    )
+    
 Development sponsored by `Caktus Consulting Group, LLC
 <http://www.caktusgroup.com/services>`_.
