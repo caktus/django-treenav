@@ -13,7 +13,7 @@ Show Treenav
     {% show_treenav "top-level-slug" full_true=False %}
 
 
-This is the canonical tag you will be using.  It outputs treeing list starting
+This is the canonical tag you will be using.  It outputs a treeing list starting
 with all the children of menu item which has a slug matching top-level-slug.
 Then it builds the next level down if one exists for the active leg of the tree
 and so on.  Take note that only the active portion of the tree will be shown

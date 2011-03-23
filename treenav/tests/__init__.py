@@ -77,12 +77,6 @@ class TreeNavTestCase(TestCase):
         template_str = """{% load treenav_tags %}
         {% show_treenav "primary-nav" %}
         """
-        compiled = self.compile_string("/", template_str)
-
-    def test_render_menu_children(self):    
-        template_str = """{% load treenav_tags %}
-        {% render_menu_children "primary-nav" %}
-        """
         self.compile_string("/", template_str)
 
     def test_show_menu_crumbs(self):    
