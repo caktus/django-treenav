@@ -31,6 +31,8 @@ This takes in the an MenuItem model instance and builds a nested list like
 as show_treenav except it takes in the model object instead of its slug and does
 not have a full_tree option.
 
+..  _html-example:
+
 Menu HTML Example
 -----------------
 
