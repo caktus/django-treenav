@@ -37,7 +37,7 @@ Installation
 
 .. highlight:: python    
 
-#.  Install the app with pip::
+#. Install the app with pip::
 
     pip install django-treenav
 
