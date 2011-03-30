@@ -16,10 +16,10 @@ or the other wasn't useful.
 Features
 --------
 
-- Generic functionality with multiple URL specifications: get_absolute_url(), reverse(), or raw URLs
+- Generic functionality with multiple URL specifications: `get_absolute_url()`, `reverse()`, or raw URLs
 - Packaged with templates to render the tree hierarchy with nested `<ul>`'s, but can easily be overridden with custom templates
 - Useful css classes for flexible UI customization
-- Automatically sets "active" on item and item's parents if PATH_INFO is equal to item.href
+- Automatically sets "active" on item and item's parents if `PATH_INFO` is equal to `item.href`
 - Efficient: minimizes database access with django-mptt functionality
 
 Requirements
@@ -27,10 +27,17 @@ Requirements
 - `django
   <https://github.com/django/django/>`_
 - `django-mptt
-  <http://github.com/django-mptt/django-mptt/>`_
-  *should be installed from the github repository instead of pip until 
-  django-mptt releases a version later than 4.2 to avoid having errors in the
-  ordering of menu items.*
+  <http://github.com/django-mptt/django-mptt/>`_  
+  
+  Version 4.2 and lower contains a `bug <https://github.com/django-mptt/django-mptt/issues#issue/14>`_
+  that causes children menu items to become out of order when saved as a formset 
+  in Django's admin interface. 
+  
+  This issue has been resolved in the latest development version of django-mptt,
+  which can be installed with::
+  
+   pip install -e git+https://github.com/django-mptt/django-mptt.git#egg=django-mptt
+  
 
 Installation
 ------------
