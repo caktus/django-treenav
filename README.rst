@@ -49,7 +49,7 @@ Installation
     pip install django-treenav
 
 
-#. Add to your INSTALLED_APPS and run syncdb::
+#. Add to your `INSTALLED_APPS` and run syncdb::
 
     INSTALLED_APPS = (
         ...,
