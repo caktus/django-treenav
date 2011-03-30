@@ -17,7 +17,10 @@ Requirements
 - `django
   <https://github.com/django/django/>`_
 - `django-mptt
-  <http://code.google.com/p/django-mptt/>`_
+  <http://github,com/django-mptt/django-mptt/>`_
+  should be installed from the github repository instead of pip until 
+  django-mptt releases a version later than 4.2 to avoid having errors in the
+  ordering of menu items.
 
 Installation
 ------------
