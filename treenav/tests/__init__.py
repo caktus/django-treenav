@@ -48,7 +48,7 @@ class TreeOrder(TestCase):
         order = MenuItem.objects.exclude(
             slug='primary-nav'
             ).values_list('order', flat=True)
-        self.assertEquals(order, sorted(order))
+        self.assertEquals(list(order), sorted(order))
 
 
 class TreeNavTestCase(TestCase):
