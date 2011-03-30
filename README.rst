@@ -21,6 +21,9 @@ Features
 - Useful css classes for flexible UI customization
 - Automatically sets "active" on item and item's parents if `PATH_INFO` is equal to `item.href`
 - Efficient: minimizes database access with django-mptt functionality
+- Caches the tree so that repeated page views to not hit the database.
+- Simple links in the `MenuItem` list view for refreshing the cache and href
+  from the database.
 
 Requirements
 ------------
