@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.test import TestCase, Client
 from django.http import HttpRequest
 from django.core.urlresolvers import reverse
@@ -22,6 +22,33 @@ class Team(models.Model):
     
     def get_absolute_url(self):
         return '/team/%s/' % self.slug
+
+
+class TreeOrder(TestCase):
+    
+    def test_order(self):
+        with transaction.commit_manually():
+            primary_nav = MenuItem(
+                label='primary-nav',
+                slug='primary-nav',
+                order=0,
+                )
+            primary_nav.save()
+            child = {}
+            for i in [2,4,5,1,0,8]:
+                child[i] = MenuItem(
+                    parent=primary_nav,
+                    label=str(i),
+                    slug=str(i),
+                    order=i,
+                    link='/',
+                    )
+                child[i].save()
+            transaction.commit()
+        order = MenuItem.objects.exclude(
+            slug='primary-nav'
+            ).values_list('order', flat=True)
+        self.assertEquals(order, sorted(order))
 
 
 class TreeNavTestCase(TestCase):
