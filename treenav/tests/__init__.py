@@ -25,6 +25,13 @@ class Team(models.Model):
 
 
 class TreeOrder(TransactionTestCase):
+    """
+    Test checking that if children added out of order to a new tree will be 
+    ordered properly when called.
+    The original source of this bug is django-mptt but this does check that menu
+    item is ordering by the correct attributes as well.
+    https://github.com/django-mptt/django-mptt/issues#issue/14
+    """
     
     def test_order(self):
         primary_nav = MenuItem(
