@@ -1,23 +1,17 @@
 django-treenav
 ==============
 
-Extensible, hierarchical, and pluggable navigation system for Django sites.
+An extensible, hierarchical, and pluggable navigation system for Django sites.
 
-Doing a simple search will show you that django has a number of dynamic
-menu generation systems, so why did we build another one?  Many of the projects
-that existed before treenav had a tight coupling with the content, typically a
-CMS.
+*django-treenav* was designed from the start to live independent of a CMS
+implementation. As a separate application, treenav can easily be integrated
+into existing, custom setups and does not enforce or require users to use a
+particular content management system.
 
-When a developer wants to mix and match strong coupling can be problematic. Often the
-application is not designed to work outside of its internal framework, leading to
-complicated workarounds or forking.
-
-Along with treenav we built `django-pagelets
-<http://readthedocs.org/projects/django-pagelets/>`_
-which, even though decoupled, has a conditional include to allow users to
-define a Menu Item for a page more easily on its change view.
-Keeping these two apps separate guarantees that neither will by design or accident
-be unable to work without the other.
+Sharing the same principals,
+`django-pagelets <http://readthedocs.org/projects/django-pagelets/>`_
+integrates seamlessly with treenav and can be used together to create a flexible
+CMS product.
 
 Features
 --------
