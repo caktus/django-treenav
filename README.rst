@@ -9,7 +9,7 @@ that existed before treenav had a tight coupling with the content, typically a
 CMS.
 
 When a developer wants to mix and match strong coupling can be problematic. Often the
-application is not designed to work outside of its internal framework, leading
+application is not designed to work outside of its internal framework, leading to
 complicated workarounds or forking.
 
 Along with treenav we built `django-pagelets
