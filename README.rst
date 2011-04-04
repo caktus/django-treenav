@@ -13,6 +13,8 @@ Sharing the same principals,
 integrates seamlessly with treenav and can be used together to create a flexible
 CMS product.
 
+For complete documentation checkout, `<http://django-treenav.readthedocs.org>`_
+
 Features
 --------
 
