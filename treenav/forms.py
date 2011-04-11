@@ -13,10 +13,10 @@ class MenuItemForm(forms.ModelForm):
         queryset=MenuItem.tree.all(),
         required=False,
     )
-    
+
     class Meta:
         model = MenuItem
-    
+
     def __init__(self, *args, **kwargs):
         super(MenuItemForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
@@ -40,6 +40,7 @@ class MenuItemForm(forms.ModelForm):
         return self.cleaned_data['link']
 
     def clean(self):
+        super(MenuItemForm, self).clean()
         content_type = self.cleaned_data['content_type']
         object_id = self.cleaned_data['object_id']
         if (content_type and not object_id) or (not content_type and object_id):
@@ -55,7 +56,7 @@ class MenuItemForm(forms.ModelForm):
                 obj.get_absolute_url()
             except AttributeError, e:
                 raise forms.ValidationError(str(e))
-        
+
         if 'is_enabled' in self.cleaned_data and \
           self.cleaned_data['is_enabled'] and \
           'link' in self.cleaned_data and \
@@ -63,7 +64,7 @@ class MenuItemForm(forms.ModelForm):
             raise forms.ValidationError('Menu items with regular expression '
                                         'URLs must be disabled.')
         return self.cleaned_data
-    
+
     def save(self, commit=True):
         # ## WARNING ##
         # (1) respect the caller's commit argument, so that the form will
@@ -85,7 +86,7 @@ class MenuItemForm(forms.ModelForm):
                 ).exclude(pk=instance.id)[0]
                 position = 'left'
             except IndexError:
-                node = parent 
+                node = parent
                 position = 'last-child'
             instance.move_to(node, position=position)
         return instance
@@ -98,3 +99,4 @@ class GenericInlineMenuItemForm(forms.ModelForm):
     class Meta:
         model = MenuItem
         fields = ('parent', 'label', 'slug', 'order', 'is_enabled')
+

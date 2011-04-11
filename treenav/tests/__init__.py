@@ -19,20 +19,20 @@ from treenav.forms import MenuItemForm
 class Team(models.Model):
 
     slug = models.SlugField()
-    
+
     def get_absolute_url(self):
         return '/team/%s/' % self.slug
 
 
 class TreeOrder(TransactionTestCase):
     """
-    Test checking that if children added out of order to a new tree will be 
+    Test checking that if children added out of order to a new tree will be
     ordered properly when called.
     The original source of this bug is django-mptt but this does check that menu
     item is ordering by the correct attributes as well.
     https://github.com/django-mptt/django-mptt/issues#issue/14
     """
-    
+
     def test_order(self):
         primary_nav = MenuItem(
             label='primary-nav',
@@ -85,33 +85,41 @@ class TreeNavTestCase(TestCase):
             'slug': 'about-us',
             'order': 9,
         }).save()
-        
-    
+
+
     def test_treenav_active(self):
         request = HttpRequest()
         request.META['PATH_INFO'] = '/'
         treenav_active(request)
-        
+
     def test_to_tree(self):
         self.root.to_tree()
-    
+
     def compile_string(self, url, template_str):
         origin = StringOrigin(url)
         return compile_string(template_str, origin).render(Context())
-        
-    def test_single_level_menu(self):    
+
+    def test_non_unique_form_save(self):
+        dup = MenuItemForm({
+            'label': 'test nav',
+            'slug': 'primary-nav',
+            'order': 0,
+        })
+        self.assertFalse(dup.is_valid(), 'Form says a duplicate slug is valid.')
+
+    def test_single_level_menu(self):
         template_str = """{% load treenav_tags %}
         {% single_level_menu "primary-nav" 0 %}
         """
         self.compile_string("/", template_str)
-        
-    def test_show_treenav(self):    
+
+    def test_show_treenav(self):
         template_str = """{% load treenav_tags %}
         {% show_treenav "primary-nav" %}
         """
         self.compile_string("/", template_str)
 
-    def test_show_menu_crumbs(self):    
+    def test_show_menu_crumbs(self):
         template_str = """{% load treenav_tags %}
         {% show_menu_crumbs "about-us" %}
         """
@@ -143,7 +151,7 @@ class TreeNavTestCase(TestCase):
             self.fail(form.errors)
         menu = form.save()
         self.assertEqual(menu.href, team.get_absolute_url())
-    
+
     def test_changed_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='treenav', model='team')
@@ -161,7 +169,7 @@ class TreeNavTestCase(TestCase):
         team.save()
         menu = MenuItem.objects.get(slug='durham-bulls')
         self.assertEqual(menu.href, team.get_absolute_url())
-        
+
     def test_active_url(self):
         team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='treenav', model='team')
@@ -172,7 +180,7 @@ class TreeNavTestCase(TestCase):
         item = Item(self.child)
         active_item = item.set_active(team.get_absolute_url())
         self.assertEquals(active_item.node, self.child)
-        
+
 
 class TreeNavViewTestCase(TestCase):
 
@@ -202,21 +210,21 @@ class TreeNavViewTestCase(TestCase):
             slug='about-us',
             order=9,
         )
-    
+
     def test_tags_level(self):
         c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('home',))
         response = c.post(url,{'pslug':'primary-nav', 'N':0} )
         self.assertEquals(response.content.count('<li'),3)
         self.assertContains(response,'depth-0')
-    
+
     def test_tags_no_page(self):
         c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('notthere',))
         response = c.post(url,{'pslug':'primary-nav', 'N':0} )
         self.assertEquals(response.content.count('<li'),3)
         self.assertContains(response,'depth-0')
-    
+
     def test_tags_level2(self):
         MenuItem.objects.create(
             parent=MenuItem.objects.get(slug='about-us'),
@@ -228,13 +236,13 @@ class TreeNavViewTestCase(TestCase):
         url = reverse('treenav.tests.urls.test_view',args=('home',))
         response = c.post(url,{'pslug':'about-us', 'N':0} )
         self.assertEquals(response.content.count('<li'),1)
-        
+
     def test_tags_improper(self):
         c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('home',))
         response = c.post(url,{'pslug':'no-nav', 'N':10000} )
         self.assertNotContains(response,'<ul')
-        
+
     def test_hierarchy(self):
         root = MenuItem.objects.get(slug='primary-nav').to_tree()
         self.assertEqual(len(root.children), 3)
