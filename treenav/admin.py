@@ -11,6 +11,7 @@ class GenericMenuItemInline(generic.GenericStackedInline):
     Add this inline to your admin class to support editing related menu items
     from that model's admin page.
     """
+    extra = 0
     max_num = 1
     model = treenav.MenuItem
     form = GenericInlineMenuItemForm
