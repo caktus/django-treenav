@@ -10,14 +10,14 @@ Show Treenav
 
 ::
 
-    {% show_treenav "top-level-slug" full_true=False %}
+    {% show_treenav "top-level-slug" full_tree=False %}
 
 
 This is the canonical tag you will be using.  It outputs nested lists starting
 with all the children of the menu item with a slug matching top-level-slug.
 Then it builds the next level down if one exists for the active leg of the tree
 and so on.  Take note that only the active portion of the tree will be shown
-unless `full_true` is True.  To see the HTML output go to `Menu HTML Example`_.
+unless `full_tree` is True.  To see the HTML output go to `Menu HTML Example`_.
 
 Render Menu Children
 --------------------
