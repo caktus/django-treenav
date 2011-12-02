@@ -21,4 +21,7 @@ setup(
         'Operating System :: OS Independent',
     ],
     long_description=open('README.rst').read(),
+    install_requires = [
+        "django-mptt==0.5.2",
+    ],
 )
