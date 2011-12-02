@@ -85,7 +85,7 @@ Installation
 History
 -------
 
-0.6.0 (12-02-2012)
+0.6.0 (12-02-2011)
 ******************
 * Moved to GitHub
 * Add Sphinx-powered documentation
