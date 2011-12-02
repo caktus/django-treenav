@@ -29,20 +29,24 @@ Features
 
 Requirements
 ------------
-- `django
-  <https://github.com/django/django/>`_
-- `django-mptt
-  <http://github.com/django-mptt/django-mptt/>`_
+- `django <https://github.com/django/django/>`_
+- `django-mptt <http://github.com/django-mptt/django-mptt/>`_
 
-  Version 4.2 and lower contains a `bug <https://github.com/django-mptt/django-mptt/issues#issue/14>`_
-  that causes children menu items to become out of order when saved as a formset
-  in Django's admin interface.
+Using the demo
+--------------
 
-  This issue has been resolved in the latest development version of django-mptt,
-  which can be installed with::
+For a quick demo, follow these steps::
 
-   pip install -e git+https://github.com/django-mptt/django-mptt.git#egg=django-mptt
+    $ mkvirtualenv --distribute --no-site-packages django-treenav
+    (django-treenav)$ git clone git://github.com/caktus/django-treenav.git
+    (django-treenav)$ cd django-treenav/
+    (django-treenav)~/django-treenav$ python setup.py develop
+    (django-treenav)~/django-treenav$ cd sample_project/
+    (django-treenav)~/django-treenav/sample_project$ pip install -r requirements.txt
+    (django-treenav)~/django-treenav/sample_project$ ./manage.py syncdb
+    (django-treenav)~/django-treenav/sample_project$ ./manage.py runserver
 
+Visit http://localhost:8000/ in your browser and follow the instructions.
 
 Installation
 ------------
@@ -77,6 +81,23 @@ Installation
         (r'^treenav/', include('treenav.urls.admin')),
         (r'^treenav-missing/', include('treenav.urls.undefined_url')),
     )
+
+History
+-------
+
+0.6.0 (12-02-2012)
+******************
+* Moved to GitHub
+* Add Sphinx-powered documentation
+* Update to Django 1.3.x and django-mptt 0.5.2
+* Provide more order choices by default
+* Fix a few documentation related bugs
+* Cleaned up sample project for an easier demo
+
+0.5.0 (03-11-2011)
+******************
+
+* Initial release
 
 Development sponsored by `Caktus Consulting Group, LLC
 <http://www.caktusgroup.com/services>`_.
