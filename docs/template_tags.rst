@@ -10,7 +10,7 @@ Show Treenav
 
 ::
 
-    {% show_treenav "top-level-slug" full_tree=False %}
+    {% show_treenav "top-level-slug" full_tree="False" %}
 
 
 This is the canonical tag you will be using.  It outputs nested lists starting
