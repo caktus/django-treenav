@@ -6,8 +6,11 @@
             body {
                 font-family: Arial, "MS Trebuchet", sans-serif;
             }
+            a {
+                color: blue;
+            }
             a.active-menu-item-link {
-                font-weight: bold;
+                color: green;
             }
             ul {
                 background-color: #EEE;
@@ -17,14 +20,14 @@
     <body>
         {% load treenav_tags %}
         <h1>django-treenav</h1>
-        <h2>Show Treenav</h2>
+        <h2>show_treenav</h2>
         {% show_treenav "primary-nav" %}
-        <h2>Single Level Menu</h2>
+        <h2>single_level_menu</h2>
         <h3>Level 0</h3>
         {% single_level_menu "primary-nav" 0 %}
         <h3>Level 1</h3>
         {% single_level_menu "primary-nav" 1 %}
-        <h2>Show Menu Crumbs</h2>
+        <h2>show_menu_crumbs</h2>
         {% show_menu_crumbs "primary-nav" %}
     </body>
 </html>
