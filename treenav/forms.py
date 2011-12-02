@@ -5,23 +5,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import URLValidator
 
 from treenav.models import MenuItem
-from mptt.forms import TreeNodeChoiceField
+from mptt.forms import TreeNodeChoiceField, MPTTAdminForm
 
 
-class MenuItemForm(forms.ModelForm):
-    new_parent = TreeNodeChoiceField(
-        queryset=MenuItem.tree.all(),
-        required=False,
-    )
+class MenuItemForm(MPTTAdminForm):
 
     class Meta:
         model = MenuItem
-
-    def __init__(self, *args, **kwargs):
-        super(MenuItemForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['new_parent'].queryset = \
-                MenuItem.objects.exclude(pk=self.instance.pk)
 
     def clean_link(self):
         link = self.cleaned_data['link'] or ''
@@ -65,32 +55,6 @@ class MenuItemForm(forms.ModelForm):
                                         'URLs must be disabled.')
         return self.cleaned_data
 
-    def save(self, commit=True):
-        # ## WARNING ##
-        # (1) respect the caller's commit argument, so that the form will
-        # have a save_m2m method when commit=False
-        instance = super(MenuItemForm, self).save(commit=commit)
-        # (2) if commit is False, we have to save the form anyway, because
-        # the instance must be saved to call move_to
-        if not commit:
-            instance.save()
-        # reorganize if necessary
-        if self.cleaned_data['new_parent']:
-            parent = self.cleaned_data['new_parent']
-        else:
-            parent = instance.parent
-        if parent:# pragma: no cover
-            try:
-                node = parent.get_children().order_by('order').filter(
-                    order__gte=instance.order
-                ).exclude(pk=instance.id)[0]
-                position = 'left'
-            except IndexError:
-                node = parent
-                position = 'last-child'
-            instance.move_to(node, position=position)
-        return instance
-
 
 class GenericInlineMenuItemForm(forms.ModelForm):
     parent = TreeNodeChoiceField(
@@ -99,4 +63,3 @@ class GenericInlineMenuItemForm(forms.ModelForm):
     class Meta:
         model = MenuItem
         fields = ('parent', 'label', 'slug', 'order', 'is_enabled')
-
