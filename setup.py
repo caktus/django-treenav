@@ -8,9 +8,10 @@ setup(
     packages=find_packages(exclude=['sample_project']),
     include_package_data=True,
     url='http://github.com/caktus/django-treenav',
-    license='LICENSE.txt',
+    license='BSD',
     description='Extensible, hierarchical, and pluggable navigation system '
                 'for Django sites',
+    zip_safe=False, # because we're including media that Django needs
     classifiers=[
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Intended Audience :: Developers',
