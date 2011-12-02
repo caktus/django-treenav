@@ -51,8 +51,6 @@ Visit http://localhost:8000/ in your browser and follow the instructions.
 Installation
 ------------
 
-.. highlight:: python
-
 #. Install the app with pip::
 
     pip install django-treenav
