@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django import forms
 from django.contrib.contenttypes import generic
 
 from treenav import models as treenav
