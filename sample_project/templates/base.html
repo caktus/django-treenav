@@ -1,3 +1,19 @@
-{% block title %}{% endblock %}
-{% block meta %}{% endblock %}
-{% block content %} {% endblock %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>django-treenav</title>
+    </head>
+    <body>
+        {% load treenav_tags %}
+        <h1>django-treenav</h1>
+        <h2>Show Treenav</h2>
+        {% show_treenav "primary-nav" %}
+        <h2>Single Level Menu</h2>
+        <h3>Level 0</h3>
+        {% single_level_menu "primary-nav" 0 %}
+        <h3>Level 1</h3>
+        {% single_level_menu "primary-nav" 1 %}
+        <h2>Show Menu Crumbs</h2>
+        {% show_menu_crumbs "primary-nav" %}
+    </body>
+</html>

@@ -1,22 +1,22 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, include, url
+from django.views.generic.base import TemplateView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('sample_project.views',
-    # Example:
-    # (r'^sample_project/', include('sample_project.foo.urls')),
+urlpatterns = patterns('',
+    # Examples:
+    # url(r'^$', 'sample_project.views.home', name='home'),
+    # url(r'^sample_project/', include('sample_project.foo.urls')),
 
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    (r'^admin/', include(admin.site.urls)),
-    (r'^treenav/', include('treenav.urls.admin')),
-    (r'^treenav-missing/', include('treenav.urls.undefined_url')),
-    url(r'^$', 'home', name='home'),
-    url(r'^about/$', 'home', name='about'),
-    url(r'^test/$', 'home', name='test'),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^treenav/', include('treenav.urls.admin')),
+    url(r'^treenav-missing/', include('treenav.urls.undefined_url')),
+    # Catch all URL to easily demonstrate treenav display
+    url(r'^', TemplateView.as_view(template_name='base.html')),
 )
