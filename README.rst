@@ -83,6 +83,10 @@ Installation
 History
 -------
 
+0.6.1 (04-12-2012)
+******************
+* Fixed bug that prevented adding parent and child menu items simultaneously
+
 0.6.0 (12-02-2011)
 ******************
 * Moved to GitHub
