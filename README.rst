@@ -8,7 +8,7 @@ implementation. As a separate application, treenav can easily be integrated
 into existing, custom setups and does not enforce or require users to use a
 particular content management system.
 
-Sharing the same principals,
+Sharing the same principles,
 `django-pagelets <http://readthedocs.org/projects/django-pagelets/>`_
 integrates seamlessly with treenav and can be used together to create a flexible
 CMS product.
