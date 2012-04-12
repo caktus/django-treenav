@@ -4,7 +4,7 @@ from django.contrib.contenttypes import generic
 from mptt.admin import MPTTModelAdmin
 
 from treenav import models as treenav
-from treenav.forms import MenuItemForm, GenericInlineMenuItemForm
+from treenav.forms import MenuItemForm, MenuItemInlineForm, GenericInlineMenuItemForm
 
 
 class GenericMenuItemInline(generic.GenericStackedInline):
@@ -21,7 +21,7 @@ class GenericMenuItemInline(generic.GenericStackedInline):
 class SubMenuItemInline(admin.TabularInline):
     model = treenav.MenuItem
     extra = 1
-    form = MenuItemForm
+    form = MenuItemInlineForm
     prepopulated_fields = {'slug': ('label',)}
 
 
