@@ -8,10 +8,7 @@ from treenav.models import MenuItem
 from mptt.forms import TreeNodeChoiceField, MPTTAdminForm
 
 
-class MenuItemForm(MPTTAdminForm):
-
-    class Meta:
-        model = MenuItem
+class MenuItemFormMixin(object):
 
     def clean_link(self):
         link = self.cleaned_data['link'] or ''
@@ -30,7 +27,7 @@ class MenuItemForm(MPTTAdminForm):
         return self.cleaned_data['link']
 
     def clean(self):
-        super(MenuItemForm, self).clean()
+        super(MenuItemFormMixin, self).clean()
         content_type = self.cleaned_data['content_type']
         object_id = self.cleaned_data['object_id']
         if (content_type and not object_id) or (not content_type and object_id):
@@ -54,6 +51,18 @@ class MenuItemForm(MPTTAdminForm):
             raise forms.ValidationError('Menu items with regular expression '
                                         'URLs must be disabled.')
         return self.cleaned_data
+
+
+class MenuItemForm(MenuItemFormMixin, MPTTAdminForm):
+
+    class Meta:
+        model = MenuItem
+
+
+class MenuItemInlineForm(MenuItemFormMixin, forms.ModelForm):
+
+    class Meta:
+        model = MenuItem
 
 
 class GenericInlineMenuItemForm(forms.ModelForm):
