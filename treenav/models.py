@@ -103,7 +103,7 @@ class MenuItem(models.Model):
         max_length=255,
         help_text="The display name on the web site.",
     )
-    slug = models.CharField(
+    slug = models.SlugField(
         _('slug'),
         unique=True,
         max_length=255,
