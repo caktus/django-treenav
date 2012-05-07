@@ -1,20 +1,34 @@
 # -*- coding: utf-8 -*-
-import datetime
 from south.db import db
 from south.v2 import DataMigration
-from django.db import models
+from django.core.cache import cache as real_cache
+
+from treenav import models as tnmodels
+
+
+class FakeCache(object):
+    def set(self, key, value, expires=None):
+        pass
+
+    def get(self, key):
+        pass
+
+    def delete(self, key):
+        pass
+
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        for item in orm['treenav.menuitem'].objects.filter(slug__contains=' '):
-            item.slug = item.slug.replace(" ", "-")
-            item.save()
-
+        tnmodels.cache = FakeCache()
+        if not db.dry_run:
+            for item in orm['treenav.menuitem'].objects.filter(slug__contains=' '):
+                item.slug = item.slug.replace(" ", "-")
+                item.save()
+        tnmodels.cache = real_cache
 
     def backwards(self, orm):
         pass
-
 
     models = {
         'contenttypes.contenttype': {
