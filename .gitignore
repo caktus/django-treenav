@@ -8,3 +8,4 @@ build
 .coverage
 report.txt
 dist/*
+.tox/*
