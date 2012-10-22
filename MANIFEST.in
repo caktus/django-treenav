@@ -1,3 +1,4 @@
+include AUTHORS
 include README.rst
 include LICENSE.txt
 recursive-include treenav/templates *
