@@ -1,9 +1,10 @@
 {% load i18n %}
+{% load url from future %}
 {% if active_menu_items %}
     <ul>
         {% for item in active_menu_items %}
             <li>
-                <a href="{% if item.node.href %}{{ item.node.href }}{% else %}{% url treenav_undefined_url item_slug=item.node.slug %}{% endif %}" title="{{ item.node.label }}">
+                <a href="{% if item.node.href %}{{ item.node.href }}{% else %}{% url 'treenav_undefined_url' item_slug=item.node.slug %}{% endif %}" title="{{ item.node.label }}">
                     {% trans item.node.label %}
                 </a>
             </li>
