@@ -28,5 +28,5 @@ handler404 = test_404
 
 urlpatterns = patterns('',
     url(r'^item/(?P<item_slug>[\w-]+)/$', test_view, name='test_view'),
-    url(r'^old/', include('treenav.urls.undefined_url')),
+    url(r'^old/', include('treenav.urls')),
 )
