@@ -13,6 +13,12 @@ considered a release candidate for an offical v1.0.
 - Dropped support for Django prior to 1.3
 - Added tox support for testing
 
+Backwards Incompatible Changes
+___________________________________
+
+- ``treenav_refresh_hrefs`` and ``treenav_clean_cache`` were moved under the admin and require staff access
+- Including url patterns has been simplified and ``treenav.urls.admin`` were removed.
+
 
 0.6.1 (Released 2012-04-12)
 ------------------------------------
