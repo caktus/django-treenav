@@ -249,7 +249,17 @@ class RefreshViewTestCase(TestCase):
         team.slug = 'wildcats'
         team.save()
         self.assertNotEqual(menu.href, team.get_absolute_url())
-        response = self.client.get(self.refresh_url)
+        response = self.client.get(self.refresh_url, follow=True)
         self.assertRedirects(response, self.changelist_url)
         menu = MenuItem.objects.get(pk=menu.pk)
         self.assertEqual(menu.href, team.get_absolute_url())
+        self.assertEqual(len(response.context['messages']), 1)
+
+    def test_no_permission(self):
+        "Non-staff cannot trigger the refresh."
+        self.superuser.is_staff = False
+        self.superuser.save()
+        response = self.client.get(self.refresh_url, follow=True)
+        # Admin displays a login page with 200 status code
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['messages']), 0)
