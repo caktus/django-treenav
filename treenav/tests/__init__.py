@@ -14,4 +14,5 @@ class Team(models.Model):
         return '/team/%s/' % self.slug
 
 from .test_models import TreeOrder
-from .test_views import TreeNavTestCase, TreeNavViewTestCase, RefreshViewTestCase
+from .test_views import TreeNavTestCase, TreeNavViewTestCase
+from .test_views import RefreshViewTestCase, ClearCacheViewTestCase

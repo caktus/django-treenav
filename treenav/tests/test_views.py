@@ -1,6 +1,6 @@
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.template.context import Context
@@ -212,17 +212,6 @@ class RefreshViewTestCase(TestCase):
     urls = 'treenav.tests.urls'
 
     def setUp(self):
-        self.root = self.create_menu_item(**{
-            'label': 'Primary Navigation',
-            'slug': 'primary-nav',
-            'order': 0,
-        })
-        self.create_menu_item(**{
-            'parent': self.root,
-            'label': 'Our Blog',
-            'slug': 'our-blog',
-            'order': 4,
-        })
         self.superuser = User.objects.create_user('test', '', 'test')
         self.superuser.is_staff = True
         self.superuser.is_superuser = True
@@ -237,7 +226,6 @@ class RefreshViewTestCase(TestCase):
         team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='treenav', model='team')
         menu = self.create_menu_item(
-            parent=self.root,
             label='Durham Bulls',
             slug='durham-bulls',
             order=9,
@@ -260,6 +248,49 @@ class RefreshViewTestCase(TestCase):
         self.superuser.is_staff = False
         self.superuser.save()
         response = self.client.get(self.refresh_url, follow=True)
+        # Admin displays a login page with 200 status code
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['messages']), 0)
+
+
+class ClearCacheViewTestCase(TestCase):
+    "Admin view to clear menu cache."
+
+    urls = 'treenav.tests.urls'
+
+    def setUp(self):
+        self.superuser = User.objects.create_user('test', '', 'test')
+        self.superuser.is_staff = True
+        self.superuser.is_superuser = True
+        self.superuser.save()
+        self.cache_url = reverse('admin:treenav_clean_cache')
+        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        self.changelist_url = reverse('admin:%s_%s_changelist' % info)
+        self.client.login(username='test', password='test')
+
+    def test_reset_cache(self):
+        "Trigger update of menu item HREFs."
+        menu = self.create_menu_item(
+            label='Our Blog',
+            slug='our-blog',
+            order=4,
+        )
+        menu.to_tree()
+        valid = cache.get('menu-tree-%s' % menu.slug)
+        self.assertTrue(valid, 'Menu should be cached')
+        cache.set('menu-tree-%s' % menu.slug, 'INVALID!!!')
+        response = self.client.get(self.cache_url, follow=True)
+        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(len(response.context['messages']), 1)
+        # Cache should be recycled
+        current = cache.get('menu-tree-%s' % menu.slug)
+        self.assertNotEqual(current, 'INVALID!!!')
+
+    def test_no_permission(self):
+        "Non-staff cannot clear the cache."
+        self.superuser.is_staff = False
+        self.superuser.save()
+        response = self.client.get(self.cache_url, follow=True)
         # Admin displays a login page with 200 status code
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['messages']), 0)
