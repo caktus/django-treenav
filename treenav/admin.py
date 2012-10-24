@@ -35,6 +35,7 @@ class SubMenuItemInline(admin.TabularInline):
 
 
 class MenuItemAdmin(MPTTModelAdmin):
+    change_list_template = 'admin/treenav/menuitem/change_list.html'
     list_display = (
         'slug',
         'label',

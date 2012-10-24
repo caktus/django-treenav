@@ -1,18 +1,17 @@
-{% extends "admin/change_list.html" %}
+{% extends "admin/mptt_change_list.html" %}
+{% load i18n %}
 {% load url from future %}
 
-{% block content %}
-<noscript>
-    <a href="{% url 'treenav_refresh_hrefs' %}"
-        title="Refresh all cached menu item HREFs in the database">
-        Refresh HREFs
-    </a>
-</noscript>
-{{ block.super }}
-<script type="text/javascript">
-(function($) {
-  $('.object-tools').prepend('<li><a href="{% "url treenav_refresh_hrefs" %}" title="Refresh all cached menu item HREFs in the database">Refresh HREFs</a></li>');
-  $('.object-tools').prepend('<li><a href="{% "url treenav_clean_cache" %}" title="Remove all MenuItems from Cache.">Clean Menu Cache</a></li>');
-})(django.jQuery);
-</script>
+{% block object-tools-items %}
+    <li>
+      <a href="{% url 'admin:treenav_clean_cache' %}{% if is_popup %}?_popup=1{% endif %}" title="{% trans 'Remove all MenuItems from Cache' %}">
+        {% trans 'Clean Menu Cache' %}
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'admin:treenav_refresh_hrefs' %}{% if is_popup %}?_popup=1{% endif %}" title="{% trans 'Refresh all cached menu item HREFs in the database' %}">
+        {% trans 'Refresh HREFs' %}
+      </a>
+    </li>
+    {{ block.super }}
 {% endblock %}
