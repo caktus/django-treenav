@@ -1,8 +1,10 @@
-from django.http import HttpRequest
+
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.http import HttpRequest
 from django.template.context import Context
 from django.template import compile_string, TemplateSyntaxError, StringOrigin
-from django.contrib.contenttypes.models import ContentType
 
 from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
@@ -202,3 +204,52 @@ class TreeNavViewTestCase(TestCase):
         url = reverse('treenav_undefined_url', args=[slug,])
         response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
+
+
+class RefreshViewTestCase(TestCase):
+    "Admin view to trigger refresh of hrefs."
+
+    urls = 'treenav.tests.urls'
+
+    def setUp(self):
+        self.root = self.create_menu_item(**{
+            'label': 'Primary Navigation',
+            'slug': 'primary-nav',
+            'order': 0,
+        })
+        self.create_menu_item(**{
+            'parent': self.root,
+            'label': 'Our Blog',
+            'slug': 'our-blog',
+            'order': 4,
+        })
+        self.superuser = User.objects.create_user('test', '', 'test')
+        self.superuser.is_staff = True
+        self.superuser.is_superuser = True
+        self.superuser.save()
+        self.refresh_url = reverse('admin:treenav_refresh_hrefs')
+        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        self.changelist_url = reverse('admin:%s_%s_changelist' % info)
+        self.client.login(username='test', password='test')
+
+    def test_trigger_refresh(self):
+        "Trigger update of menu item HREFs."
+        team = Team.objects.create(slug='durham-bulls')
+        ct = ContentType.objects.get(app_label='treenav', model='team')
+        menu = self.create_menu_item(
+            parent=self.root,
+            label='Durham Bulls',
+            slug='durham-bulls',
+            order=9,
+            content_type=ct,
+            object_id=team.pk,
+            href=team.get_absolute_url(),
+        )
+        # change slug and save it to fire post_save signal
+        team.slug = 'wildcats'
+        team.save()
+        self.assertNotEqual(menu.href, team.get_absolute_url())
+        response = self.client.get(self.refresh_url)
+        self.assertRedirects(response, self.changelist_url)
+        menu = MenuItem.objects.get(pk=menu.pk)
+        self.assertEqual(menu.href, team.get_absolute_url())

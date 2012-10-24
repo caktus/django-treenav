@@ -74,10 +74,10 @@ class MenuItemAdmin(MPTTModelAdmin):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        urls += patterns('',
-            url(r'^refresh-hrefs/$', wrap(self.refresh_hrefs), name='treenav_refresh_hrefs')
-            url(r'^clean-cache/$', wrap(self.clean_cache), name='treenav_clean_cache')
-        )
+        urls = patterns('',
+            url(r'^refresh-hrefs/$', wrap(self.refresh_hrefs), name='treenav_refresh_hrefs'),
+            url(r'^clean-cache/$', wrap(self.clean_cache), name='treenav_clean_cache'),
+        ) + urls
         return urls
 
     def refresh_hrefs(self, request):
