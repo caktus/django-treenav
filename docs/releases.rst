@@ -4,7 +4,7 @@ Release History
 Release and change history for django-treenav
 
 
-v0.9.0 (Not Yet Released)
+v0.9.0 (Released 2012-10-26)
 ------------------------------------
 
 This release is a clean up release for the API and internals. This should be
@@ -17,7 +17,7 @@ Backwards Incompatible Changes
 ___________________________________
 
 - ``treenav_refresh_hrefs`` and ``treenav_clean_cache`` were moved under the admin and require staff access
-- Including url patterns has been simplified and ``treenav.urls.admin`` were removed.
+- Including url patterns has been simplified and ``treenav.urls.admin`` were removed
 
 
 0.6.1 (Released 2012-04-12)
