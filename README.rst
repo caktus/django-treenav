@@ -30,7 +30,7 @@ Features
 Requirements
 ------------
 - `django <https://github.com/django/django/>`_ >= 1.3
-- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ == 0.5.2
+- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.5.2
 
 Using the demo
 --------------
