@@ -11,10 +11,12 @@ Contents
 =========
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
    
-   setup
-   template_tags
+    setup
+    template_tags
+    releases
+
    
 Indices and tables
 ==================

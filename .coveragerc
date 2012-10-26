@@ -1,0 +1,3 @@
+[run]
+source = treenav
+omit = */tests*,*/migrations/*

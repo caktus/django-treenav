@@ -1,10 +1,10 @@
-{% load treenav_tags %}
-{% load i18n %}
+{% load treenav_tags i18n %}
+{% load url from future %}
 {% if menuitem.enabled_children %}
 <ul id="menu{% if menuitem.node.slug %}-{{ menuitem.node.slug }}{% endif %}" class="menu depth-{{ menuitem.node.level }}">
     {% for item in menuitem.enabled_children %}
     <li id="menu-item-{{ item.node.slug }}" class="{% if item.active %}active{% else %}inactive{% endif %}-menu-item{% if not menuitem.node.is_root_node %} {{ menuitem.node.slug }}-child{% else %} top-level{% endif %}">
-        <a class="{% if item.active %}active{% else %}inactive{% endif %}-menu-item-link{% if not menuitem.node.is_root_node %} {{ menuitem.node.slug }}-child-link{% else %} top-level-link{% endif %}" href="{% if item.node.href %}{{ item.node.href }}{% else %}{% url treenav_undefined_url item_slug=item.node.slug %}{% endif %}" title="{{ item.node.label }}">{% trans item.node.label %}</a>
+        <a class="{% if item.active %}active{% else %}inactive{% endif %}-menu-item-link{% if not menuitem.node.is_root_node %} {{ menuitem.node.slug }}-child-link{% else %} top-level-link{% endif %}" href="{% if item.node.href %}{{ item.node.href }}{% else %}{% url 'treenav_undefined_url' item_slug=item.node.slug %}{% endif %}" title="{{ item.node.label }}">{% trans item.node.label %}</a>
         {% if item.active or full_tree %}{% if not single_level %}
             {% render_menu_children item %}
         {% endif %}{% endif %}
