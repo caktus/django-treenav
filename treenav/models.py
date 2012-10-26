@@ -10,7 +10,8 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 
-import mptt
+from mptt.managers import TreeManager
+from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
 
 
@@ -90,14 +91,9 @@ class MenuItemManager(models.Manager):
         return MenuUnCacheQuerySet(self.model)
 
     
-class MenuItem(models.Model):
+class MenuItem(MPTTModel):
 
-    parent = models.ForeignKey(
-        'MenuItem',
-        related_name='children',
-        null=True,
-        blank=True,
-    )
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
     label = models.CharField(
         _('label'),
         max_length=255,
@@ -131,10 +127,15 @@ class MenuItem(models.Model):
     )
     content_object = generic.GenericForeignKey('content_type', 'object_id')
     href = models.CharField(_('href'), editable=False, max_length=255)
+
     objects = MenuItemManager()
+    tree = TreeManager()
     
     class Meta:
         ordering = ('lft', 'tree_id')
+
+    class MPTTMeta:
+        order_insertion_by = ('order', )
     
     def to_tree(self):
         cache_key = 'menu-tree-%s' % self.slug
@@ -180,8 +181,6 @@ class MenuItem(models.Model):
     
     def __unicode__(self):
         return self.slug
-
-mptt.register(MenuItem, order_insertion_by=['order'])
 
 
 def treenav_save_other_object_handler(sender, instance, created, **kwargs):
