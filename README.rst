@@ -76,8 +76,7 @@ Installation
 #. Add these urls::
 
     urlpatterns = patterns('',
-        (r'^treenav/', include('treenav.urls.admin')),
-        (r'^treenav-missing/', include('treenav.urls.undefined_url')),
+        (r'^treenav/', include('treenav.urls')),
     )
 
 

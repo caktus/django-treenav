@@ -15,3 +15,4 @@ class Team(models.Model):
 
 from .test_models import TreeOrder
 from .test_views import TreeNavTestCase, TreeNavViewTestCase
+from .test_views import RefreshViewTestCase, ClearCacheViewTestCase

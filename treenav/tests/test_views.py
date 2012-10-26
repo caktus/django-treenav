@@ -1,10 +1,12 @@
-from django.test import TestCase, Client
-from django.http import HttpRequest
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.http import HttpRequest
 from django.template.context import Context
 from django.template import compile_string, TemplateSyntaxError, StringOrigin
-from django.contrib.contenttypes.models import ContentType
 
+from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
 from treenav.models import MenuItem, Item
 from treenav.forms import MenuItemForm
@@ -16,31 +18,29 @@ class TreeNavTestCase(TestCase):
     urls = 'treenav.tests.urls'
 
     def setUp(self):
-        form = MenuItemForm({
+        self.root = self.create_menu_item(**{
             'label': 'Primary Navigation',
             'slug': 'primary-nav',
             'order': 0,
         })
-        self.root = form.save()
-        MenuItemForm({
-            'parent': MenuItem.objects.get(slug='primary-nav').pk,
+        self.create_menu_item(**{
+            'parent': self.root,
             'label': 'Our Blog',
             'slug': 'our-blog',
             'order': 4,
-        }).save()
-        MenuItemForm({
-            'parent': MenuItem.objects.get(slug='primary-nav').pk,
+        })
+        self.create_menu_item(**{
+            'parent': self.root,
             'label': 'Home',
             'slug': 'home',
             'order': 0,
-        }).save()
-        self.child = MenuItemForm({
-            'parent': MenuItem.objects.get(slug='primary-nav').pk,
+        })
+        self.child = self.create_menu_item(**{
+            'parent': self.root,
             'label': 'Abot Us',
             'slug': 'about-us',
             'order': 9,
-        }).save()
-
+        })
 
     def test_treenav_active(self):
         request = HttpRequest()
@@ -80,38 +80,33 @@ class TreeNavTestCase(TestCase):
         """
         team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='treenav', model='team')
-        form = MenuItemForm({
-            'parent': MenuItem.objects.get(slug='primary-nav').pk,
+        self.create_menu_item(**{
+            'parent': self.root,
             'label': 'Durham Bulls',
             'slug': 'durham-bulls',
             'order': 4,
-            'content_type': ct.id,
+            'content_type': ct,
             'object_id': team.pk,
         })
-        form.save()
         compiled = self.compile_string(team.get_absolute_url(), template_str)
-
 
     def test_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='treenav', model='team')
-        form = MenuItemForm({
+        menu = self.create_menu_item(**{
             'label': 'Durham Bulls',
             'slug': 'durham-bulls',
             'order': 4,
-            'content_type': ct.id,
+            'content_type': ct,
             'object_id': team.pk,
         })
-        if not form.is_valid():
-            self.fail(form.errors)
-        menu = form.save()
         self.assertEqual(menu.href, team.get_absolute_url())
 
     def test_changed_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
         ct = ContentType.objects.get(app_label='treenav', model='team')
-        menu = MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
+        menu = self.create_menu_item(
+            parent=self.root,
             label='Durham Bulls',
             slug='durham-bulls',
             order=9,
@@ -142,64 +137,60 @@ class TreeNavViewTestCase(TestCase):
     urls = 'treenav.tests.urls'
 
     def setUp(self):
-        root = MenuItem.objects.create(
+        self.root = self.create_menu_item(
             label='Primary Navigation',
             slug='primary-nav',
             order=0,
         )
-        MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
+        self.create_menu_item(
+            parent=self.root,
             label='Our Blog',
             slug='our-blog',
             order=4,
         )
-        MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
+        self.create_menu_item(
+            parent=self.root,
             label='Home',
             slug='home',
             order=0,
         )
-        self.child = MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='primary-nav'),
+        self.child = self.create_menu_item(
+            parent=self.root,
             label='About Us',
             slug='about-us',
             order=9,
         )
 
     def test_tags_level(self):
-        c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('home',))
-        response = c.post(url,{'pslug':'primary-nav', 'N':0} )
+        response = self.client.post(url,{'pslug':'primary-nav', 'N':0} )
         self.assertEquals(response.content.count('<li'),3)
         self.assertContains(response,'depth-0')
 
     def test_tags_no_page(self):
-        c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('notthere',))
-        response = c.post(url,{'pslug':'primary-nav', 'N':0} )
+        response = self.client.post(url,{'pslug':'primary-nav', 'N':0} )
         self.assertEquals(response.content.count('<li'),3)
         self.assertContains(response,'depth-0')
 
     def test_tags_level2(self):
-        MenuItem.objects.create(
-            parent=MenuItem.objects.get(slug='about-us'),
+        self.create_menu_item(
+            parent=self.child,
             label='Second Level',
             slug='second-level',
             order=10,
         )
-        c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('home',))
-        response = c.post(url,{'pslug':'about-us', 'N':0} )
+        response = self.client.post(url,{'pslug':'about-us', 'N':0} )
         self.assertEquals(response.content.count('<li'),1)
 
     def test_tags_improper(self):
-        c = Client()
         url = reverse('treenav.tests.urls.test_view',args=('home',))
-        response = c.post(url,{'pslug':'no-nav', 'N':10000} )
+        response = self.client.post(url,{'pslug':'no-nav', 'N':10000} )
         self.assertNotContains(response,'<ul')
 
     def test_hierarchy(self):
-        root = MenuItem.objects.get(slug='primary-nav').to_tree()
+        root = self.root.to_tree()
         self.assertEqual(len(root.children), 3)
         children = ('Home', 'Our Blog', 'About Us')
         for item, expected_label in zip(root.children, children):
@@ -211,6 +202,95 @@ class TreeNavViewTestCase(TestCase):
         """
         slug = self.child.slug
         url = reverse('treenav_undefined_url', args=[slug,])
-        c = Client()
-        response = c.get(url)
+        response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
+
+
+class RefreshViewTestCase(TestCase):
+    "Admin view to trigger refresh of hrefs."
+
+    urls = 'treenav.tests.urls'
+
+    def setUp(self):
+        self.superuser = User.objects.create_user('test', '', 'test')
+        self.superuser.is_staff = True
+        self.superuser.is_superuser = True
+        self.superuser.save()
+        self.refresh_url = reverse('admin:treenav_refresh_hrefs')
+        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        self.changelist_url = reverse('admin:%s_%s_changelist' % info)
+        self.client.login(username='test', password='test')
+
+    def test_trigger_refresh(self):
+        "Trigger update of menu item HREFs."
+        team = Team.objects.create(slug='durham-bulls')
+        ct = ContentType.objects.get(app_label='treenav', model='team')
+        menu = self.create_menu_item(
+            label='Durham Bulls',
+            slug='durham-bulls',
+            order=9,
+            content_type=ct,
+            object_id=team.pk,
+            href=team.get_absolute_url(),
+        )
+        # change slug and save it to fire post_save signal
+        team.slug = 'wildcats'
+        team.save()
+        self.assertNotEqual(menu.href, team.get_absolute_url())
+        response = self.client.get(self.refresh_url, follow=True)
+        self.assertRedirects(response, self.changelist_url)
+        menu = MenuItem.objects.get(pk=menu.pk)
+        self.assertEqual(menu.href, team.get_absolute_url())
+        self.assertEqual(len(response.context['messages']), 1)
+
+    def test_no_permission(self):
+        "Non-staff cannot trigger the refresh."
+        self.superuser.is_staff = False
+        self.superuser.save()
+        response = self.client.get(self.refresh_url, follow=True)
+        # Admin displays a login page with 200 status code
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['messages']), 0)
+
+
+class ClearCacheViewTestCase(TestCase):
+    "Admin view to clear menu cache."
+
+    urls = 'treenav.tests.urls'
+
+    def setUp(self):
+        self.superuser = User.objects.create_user('test', '', 'test')
+        self.superuser.is_staff = True
+        self.superuser.is_superuser = True
+        self.superuser.save()
+        self.cache_url = reverse('admin:treenav_clean_cache')
+        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        self.changelist_url = reverse('admin:%s_%s_changelist' % info)
+        self.client.login(username='test', password='test')
+
+    def test_reset_cache(self):
+        "Trigger update of menu item HREFs."
+        menu = self.create_menu_item(
+            label='Our Blog',
+            slug='our-blog',
+            order=4,
+        )
+        menu.to_tree()
+        valid = cache.get('menu-tree-%s' % menu.slug)
+        self.assertTrue(valid, 'Menu should be cached')
+        cache.set('menu-tree-%s' % menu.slug, 'INVALID!!!')
+        response = self.client.get(self.cache_url, follow=True)
+        self.assertRedirects(response, self.changelist_url)
+        self.assertEqual(len(response.context['messages']), 1)
+        # Cache should be recycled
+        current = cache.get('menu-tree-%s' % menu.slug)
+        self.assertNotEqual(current, 'INVALID!!!')
+
+    def test_no_permission(self):
+        "Non-staff cannot clear the cache."
+        self.superuser.is_staff = False
+        self.superuser.save()
+        response = self.client.get(self.cache_url, follow=True)
+        # Admin displays a login page with 200 status code
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['messages']), 0)
