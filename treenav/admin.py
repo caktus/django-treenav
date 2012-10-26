@@ -85,8 +85,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         """
         Refresh all the cached menu item HREFs in the database.
         """
-        menus = treenav.MenuItem.objects.all().iterator()
-        for item in menus:
+        for item in treenav.MenuItem.objects.all():
             item.save() # refreshes the HREF
         self.message_user(request, _('Menu item HREFs refreshed successfully.'))
         info = self.model._meta.app_label, self.model._meta.module_name
