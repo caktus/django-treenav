@@ -67,7 +67,8 @@ class MenuItemInlineForm(MenuItemFormMixin, forms.ModelForm):
 
 class GenericInlineMenuItemForm(forms.ModelForm):
     parent = TreeNodeChoiceField(
-        queryset=MenuItem.tree.all()
+        queryset=MenuItem.tree.all(),
+        required=False
     )
     class Meta:
         model = MenuItem
