@@ -10,5 +10,5 @@ Setup
    {% load treenav_tags %}
    {% show_treenav 'primary-nav' %}
 
-#. Apply CCS to you navigation by adding it to your base template and media 
+#. Apply CSS to you navigation by adding it to your base template and media 
    directory using the classes described in :ref:`html-example`. 
