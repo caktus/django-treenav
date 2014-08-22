@@ -4,6 +4,12 @@ Release History
 Release and change history for django-treenav
 
 
+v0.9.1 (Released 2012-10-26)
+------------------------------------
+
+- Allow MenuItem.parent to be blank
+- Fixed bug that prevented display of more than 2 levels of tree when ``full_tree`` was set to True
+
 v0.9.0 (Released 2012-10-26)
 ------------------------------------
 
