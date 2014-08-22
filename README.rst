@@ -20,9 +20,6 @@ CMS product.
 
 For complete documentation checkout, `<http://django-treenav.readthedocs.org>`_
 
-.. image:: https://travis-ci.org/caktus/django-treenav.svg?branch=27-travis
-    :target: https://travis-ci.org/caktus/django-treenav
-
 .. |master-status| image::
    https://travis-ci.org/caktus/django-treenav.svg?branch=master
     :target: https://travis-ci.org/caktus/django-treenav
