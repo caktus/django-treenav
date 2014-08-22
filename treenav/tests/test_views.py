@@ -37,9 +37,21 @@ class TreeNavTestCase(TestCase):
         })
         self.child = self.create_menu_item(**{
             'parent': self.root,
-            'label': 'Abot Us',
+            'label': 'About Us',
             'slug': 'about-us',
             'order': 9,
+        })
+        second_level = self.create_menu_item(**{
+            'parent': self.child,
+            'label': 'Second',
+            'slug': 'second',
+            'order': 0,
+        })
+        self.third_level = self.create_menu_item(**{
+            'parent': second_level,
+            'label': 'Third',
+            'slug': 'third',
+            'order': 0,
         })
 
     def test_treenav_active(self):
@@ -73,6 +85,13 @@ class TreeNavTestCase(TestCase):
         {% show_treenav "primary-nav" %}
         """
         self.compile_string("/", template_str)
+
+    def test_show_treenav_third_level(self):
+        template_str = """{% load treenav_tags %}
+        {% show_treenav "primary-nav" full_tree="True" %}
+        """
+        result = self.compile_string("/", template_str)
+        self.assertIn(self.third_level.label, result)
 
     def test_show_menu_crumbs(self):
         template_str = """{% load treenav_tags %}

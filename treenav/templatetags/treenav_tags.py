@@ -107,12 +107,13 @@ class RenderMenuChildrenNode(template.Node):
     """
     def __init__(self, item):
         self.item = template.Variable(item)
-        
+
     def render(self, context):
         parent_context = context
         item = self.item.resolve(parent_context)
         context = new_context(parent_context)
         context['menuitem'] = item
+        context['full_tree'] = parent_context['full_tree']
         return render_to_string('treenav/menuitem.html', context)
 
 
