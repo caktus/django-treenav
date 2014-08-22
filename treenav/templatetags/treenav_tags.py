@@ -1,5 +1,3 @@
-import copy
-
 from django import template
 from django.core.cache import cache
 from django.template.loader import render_to_string
@@ -36,7 +34,7 @@ class SingleLevelMenuNode(CaktNode):
     """
     Renders the nth-level items of a named Menu model object.
     """
-    
+
     def render_with_args(self, context, slug, level):
         level = int(level)
         menu = get_menu_item(slug)
@@ -75,7 +73,7 @@ class MenuNode(CaktNode):
     """
     Renders the top-level items of a named Menu model object.
     """
-    
+
     def render_with_args(self, context, slug, full_tree=False):
         # don't modify the parent context
         parent_context = context
@@ -94,7 +92,7 @@ class MenuNode(CaktNode):
         context['full_tree'] = ('True' == full_tree)
         return render_to_string('treenav/menuitem.html', context)
 
-    
+
 @register.tag(name='show_treenav')
 def show_treenav(parser, token):
     tag_name, args, kwargs = parse_args_kwargs(parser, token)
@@ -144,4 +142,3 @@ class ActiveMenuItemsNode(CaktNode):
 def show_menu_crumbs(parser, token):
     tag_name, args, kwargs = parse_args_kwargs(parser, token)
     return ActiveMenuItemsNode(*args, **kwargs)
-   
