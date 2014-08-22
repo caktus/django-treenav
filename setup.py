@@ -23,7 +23,7 @@ setup(
     ],
     long_description=open('README.rst').read(),
     install_requires=[
-        "django>=1.3",
+        "django>=1.4.2",
         "django-mptt>=0.5.2",
     ],
 )

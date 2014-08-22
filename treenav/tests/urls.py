@@ -1,8 +1,4 @@
-try:
-    from django.conf.urls import url, patterns, include, handler404
-except ImportError:
-    # Django <= 1.3
-    from django.conf.urls.defaults import url, patterns, include, handler404
+from django.conf.urls import url, patterns, include, handler404
 from django.http import HttpResponse, HttpResponseNotFound
 from django.template import Template, Context
 

@@ -3,6 +3,11 @@ Release History
 
 Release and change history for django-treenav
 
+vNEXT (Released DATE)
+---------------------
+
+- Dropped support for Django prior to 1.4
+- Setup Travis
 
 v0.9.1 (Released 2012-10-26)
 ------------------------------------
