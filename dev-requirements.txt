@@ -1,6 +1,0 @@
--r requirements.txt
-
-coverage>=3.7.1
-coveralls>=0.4.2
-flake8>=2.2.2
-tox>=1.7.2

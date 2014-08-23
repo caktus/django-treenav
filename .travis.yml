@@ -9,19 +9,15 @@ env:
   - TOXENV=py27-1.6.X,py26-1.6.X
   - TOXENV=py27-1.5.X,py26-1.5.X
   - TOXENV=py27-1.4.X,py26-1.4.X
+  - TOXENV=flake8
+  - TOXENV=coverage
   - TOXENV=docs
 
 install:
-  - pip install -r dev-requirements.txt
+  - pip install tox
 
 script:
   - tox
-  - flake8 .
-  - coverage run runtests.py
-  - coverage report -m --fail-under 80
-
-after_success:
-  - coveralls
 
 matrix:
   allow_failures:
