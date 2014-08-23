@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.template.context import Context
-from django.template import compile_string, TemplateSyntaxError, StringOrigin
+from django.template import compile_string, StringOrigin
 
 from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
@@ -108,6 +108,8 @@ class TreeNavTestCase(TestCase):
             'object_id': team.pk,
         })
         compiled = self.compile_string(team.get_absolute_url(), template_str)
+        # FIXME: This fixes the pep8 warning, but need to figure out what we're asserting
+        self.assertTrue(compiled)
 
     def test_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
@@ -181,16 +183,16 @@ class TreeNavViewTestCase(TestCase):
         )
 
     def test_tags_level(self):
-        url = reverse('treenav.tests.urls.test_view',args=('home',))
-        response = self.client.post(url,{'pslug':'primary-nav', 'N':0} )
-        self.assertEquals(response.content.count('<li'),3)
-        self.assertContains(response,'depth-0')
+        url = reverse('treenav.tests.urls.test_view', args=('home',))
+        response = self.client.post(url, {'pslug': 'primary-nav', 'N': 0})
+        self.assertEquals(response.content.count('<li'), 3)
+        self.assertContains(response, 'depth-0')
 
     def test_tags_no_page(self):
-        url = reverse('treenav.tests.urls.test_view',args=('notthere',))
-        response = self.client.post(url,{'pslug':'primary-nav', 'N':0} )
-        self.assertEquals(response.content.count('<li'),3)
-        self.assertContains(response,'depth-0')
+        url = reverse('treenav.tests.urls.test_view', args=('notthere',))
+        response = self.client.post(url, {'pslug': 'primary-nav', 'N': 0})
+        self.assertEquals(response.content.count('<li'), 3)
+        self.assertContains(response, 'depth-0')
 
     def test_tags_level2(self):
         self.create_menu_item(
@@ -199,14 +201,14 @@ class TreeNavViewTestCase(TestCase):
             slug='second-level',
             order=10,
         )
-        url = reverse('treenav.tests.urls.test_view',args=('home',))
-        response = self.client.post(url,{'pslug':'about-us', 'N':0} )
-        self.assertEquals(response.content.count('<li'),1)
+        url = reverse('treenav.tests.urls.test_view', args=('home',))
+        response = self.client.post(url, {'pslug': 'about-us', 'N': 0})
+        self.assertEquals(response.content.count('<li'), 1)
 
     def test_tags_improper(self):
-        url = reverse('treenav.tests.urls.test_view',args=('home',))
-        response = self.client.post(url,{'pslug':'no-nav', 'N':10000} )
-        self.assertNotContains(response,'<ul')
+        url = reverse('treenav.tests.urls.test_view', args=('home',))
+        response = self.client.post(url, {'pslug': 'no-nav', 'N': 10000})
+        self.assertNotContains(response, '<ul')
 
     def test_hierarchy(self):
         root = self.root.to_tree()
@@ -220,7 +222,7 @@ class TreeNavViewTestCase(TestCase):
         Testing the undefined_url view.
         """
         slug = self.child.slug
-        url = reverse('treenav_undefined_url', args=[slug,])
+        url = reverse('treenav_undefined_url', args=[slug, ])
         response = self.client.get(url)
         self.assertEquals(response.status_code, 404)
 

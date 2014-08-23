@@ -21,12 +21,12 @@ CMS product.
 For complete documentation checkout, `<http://django-treenav.readthedocs.org>`_
 
 .. |master-status| image::
-   https://travis-ci.org/caktus/django-treenav.svg?branch=master
+    https://travis-ci.org/caktus/django-treenav.svg?branch=master
     :target: https://travis-ci.org/caktus/django-treenav
     :alt: Master Build Status
 
 .. |develop-status| image::
-   https://travis-ci.org/caktus/django-treenav.svg?branch=develop
+    https://travis-ci.org/caktus/django-treenav.svg?branch=develop
     :target: https://travis-ci.org/caktus/django-treenav
     :alt: Develop Build Status
 
@@ -45,7 +45,7 @@ Features
 
 Requirements
 ------------
-- `django <https://github.com/django/django/>`_ >= 1.3
+- `django <https://github.com/django/django/>`_ >= 1.4
 - `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.5.2
 
 Using the demo

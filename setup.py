@@ -11,7 +11,7 @@ setup(
     license='BSD',
     description='Extensible, hierarchical, and pluggable navigation system '
                 'for Django sites',
-    zip_safe=False, # because we're including media that Django needs
+    zip_safe=False,  # because we're including media that Django needs
     classifiers=[
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Intended Audience :: Developers',
@@ -22,7 +22,8 @@ setup(
         'Operating System :: OS Independent',
     ],
     long_description=open('README.rst').read(),
-    install_requires = [
+    install_requires=[
+        "django>=1.4.2",
         "django-mptt>=0.5.2",
     ],
 )

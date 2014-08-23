@@ -1,3 +1,4 @@
+# flake8: noqa
 from django.db import models
 
 # per http://code.djangoproject.com/ticket/7835#comment:24,

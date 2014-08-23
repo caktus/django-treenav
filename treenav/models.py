@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db.models.signals import post_save
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
@@ -21,16 +20,16 @@ class Item(object):
         self.node = node
         self.children = []
         self.active = False
-    
+
     def __repr__(self):
         return str(self.node)
-    
+
     def add_child(self, item):
         if hasattr(self, '_enabled_children'):
             del self._enabled_children
         item.parent = self
         self.children.append(item)
-    
+
     @property
     def enabled_children(self):
         children = getattr(self, '_enabled_children', None)
@@ -38,11 +37,10 @@ class Item(object):
             children = [c for c in self.children if c.node.is_enabled]
             self._enabled_children = children
         return children
-    
+
     def set_active(self, href):
         active_node = None
-        if (self.node.href.startswith('^') and
-            re.match(self.node.href, href)) or self.node.href == href:
+        if (self.node.href.startswith('^') and re.match(self.node.href, href)) or self.node.href == href:
             self.active = True
             parent = self.parent
             while parent:
@@ -54,13 +52,13 @@ class Item(object):
             if child:
                 active_node = child
         return active_node
-    
+
     def get_active_items(self):
         if not self.parent:
             return [self]
         else:
             return self.parent.get_active_items() + [self]
-    
+
     def to_dict(self):
         return {
             'node': self.node,
@@ -80,17 +78,17 @@ class MenuUnCacheQuerySet(QuerySet):
     def delete(self, *args, **kwargs):
         delete_cache()
         super(MenuUnCacheQuerySet, self).delete(*args, **kwargs)
-        
+
     def update(self, *args, **kwargs):
         delete_cache()
         super(MenuUnCacheQuerySet, self).update(*args, **kwargs)
 
-    
+
 class MenuItemManager(models.Manager):
-    def get_query_set(self):    
+    def get_query_set(self):
         return MenuUnCacheQuerySet(self.model)
 
-    
+
 class MenuItem(MPTTModel):
 
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
@@ -130,13 +128,13 @@ class MenuItem(MPTTModel):
 
     objects = MenuItemManager()
     tree = TreeManager()
-    
+
     class Meta:
         ordering = ('lft', 'tree_id')
 
     class MPTTMeta:
         order_insertion_by = ('order', )
-    
+
     def to_tree(self):
         cache_key = 'menu-tree-%s' % self.slug
         root = cache.get(cache_key)
@@ -157,7 +155,7 @@ class MenuItem(MPTTModel):
                     previous_item.parent.add_child(item)
             cache.set(cache_key, root)
         return root
-    
+
     def save(self, *args, **kwargs):
         literal_url_prefixes = ('/', 'http://', 'https://')
         regex_url_prefixes = ('^',)
@@ -165,7 +163,7 @@ class MenuItem(MPTTModel):
             if any([self.link.startswith(s) for s in literal_url_prefixes]):
                 self.href = self.link
             elif any([self.link.startswith(s) for s in regex_url_prefixes]):
-                self.href = '' # regex should not be used as an actual URL
+                self.href = ''  # regex should not be used as an actual URL
             else:
                 self.href = reverse(self.link)
         elif self.content_object:
@@ -178,7 +176,7 @@ class MenuItem(MPTTModel):
     def delete(self, *args, **kwargs):
         delete_cache()
         super(MenuItem, self).delete(*args, **kwargs)
-    
+
     def __unicode__(self):
         return self.slug
 
