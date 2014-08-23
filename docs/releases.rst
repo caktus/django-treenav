@@ -6,6 +6,8 @@ Release and change history for django-treenav
 vNEXT (Released DATE)
 ---------------------
 
+- Python 3 support
+- Confirmed support for Django 1.7
 - Dropped support for Django prior to 1.4
 - Setup Travis
 
