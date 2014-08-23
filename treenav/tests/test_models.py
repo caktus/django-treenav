@@ -32,4 +32,4 @@ class TreeOrder(TransactionTestCase):
         order = MenuItem.objects.exclude(
             slug='primary-nav'
             ).values_list('order', flat=True)
-        self.assertEquals(list(order), sorted(order))
+        self.assertEqual(list(order), sorted(order))

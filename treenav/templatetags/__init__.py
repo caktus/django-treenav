@@ -25,7 +25,7 @@ def parse_args_kwargs(parser, token):
 class CaktNode(Node):
     def __init__(self, *args, **kwargs):
         self.args = [Variable(arg) for arg in args]
-        self.kwargs = dict([(k, Variable(arg)) for k, arg in kwargs.items()])
+        self.kwargs = dict([(k, Variable(arg)) for k, arg in list(kwargs.items())])
 
     def render_with_args(self, context, *args, **kwargs):
         raise Exception('render_with_args must be implemented the class that inherits CaktNode')
@@ -39,7 +39,7 @@ class CaktNode(Node):
                 args.append(None)
 
         kwargs = {}
-        for k, arg in self.kwargs.items():
+        for k, arg in list(self.kwargs.items()):
             try:
                 kwargs[k] = arg.resolve(context)
             except VariableDoesNotExist:
