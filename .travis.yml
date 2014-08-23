@@ -9,15 +9,15 @@ env:
   - TOXENV=py27-1.6.X,py26-1.6.X
   - TOXENV=py27-1.5.X,py26-1.5.X
   - TOXENV=py27-1.4.X,py26-1.4.X
+  - TOXENV=flake8
+  - TOXENV=coverage
   - TOXENV=docs
 
 install:
   - pip install tox
-  - pip install flake8
 
 script:
   - tox
-  - flake8 .
 
 matrix:
   allow_failures:
