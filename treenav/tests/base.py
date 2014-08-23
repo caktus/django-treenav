@@ -10,7 +10,7 @@ class TreeNavTestCase(TestCase):
     "Base test case for creating TreeNav data."
 
     def get_random_string(self, length=10):
-        return u''.join(random.choice(string.ascii_letters) for x in range(length))
+        return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
     def create_menu_item(self, **kwargs):
         "Create a random MenuItem."

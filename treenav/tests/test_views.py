@@ -150,7 +150,7 @@ class TreeNavTestCase(TestCase):
         self.child.save()
         item = Item(self.child)
         active_item = item.set_active(team.get_absolute_url())
-        self.assertEquals(active_item.node, self.child)
+        self.assertEqual(active_item.node, self.child)
 
 
 class TreeNavViewTestCase(TestCase):
@@ -185,13 +185,13 @@ class TreeNavViewTestCase(TestCase):
     def test_tags_level(self):
         url = reverse('treenav.tests.urls.test_view', args=('home',))
         response = self.client.post(url, {'pslug': 'primary-nav', 'N': 0})
-        self.assertEquals(response.content.count('<li'), 3)
+        self.assertEqual(response.content.decode('utf-8').count('<li'), 3)
         self.assertContains(response, 'depth-0')
 
     def test_tags_no_page(self):
         url = reverse('treenav.tests.urls.test_view', args=('notthere',))
         response = self.client.post(url, {'pslug': 'primary-nav', 'N': 0})
-        self.assertEquals(response.content.count('<li'), 3)
+        self.assertEqual(response.content.decode('utf-8').count('<li'), 3)
         self.assertContains(response, 'depth-0')
 
     def test_tags_level2(self):
@@ -203,7 +203,7 @@ class TreeNavViewTestCase(TestCase):
         )
         url = reverse('treenav.tests.urls.test_view', args=('home',))
         response = self.client.post(url, {'pslug': 'about-us', 'N': 0})
-        self.assertEquals(response.content.count('<li'), 1)
+        self.assertEqual(response.content.decode('utf-8').count('<li'), 1)
 
     def test_tags_improper(self):
         url = reverse('treenav.tests.urls.test_view', args=('home',))
@@ -224,7 +224,7 @@ class TreeNavViewTestCase(TestCase):
         slug = self.child.slug
         url = reverse('treenav_undefined_url', args=[slug, ])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
 
 class RefreshViewTestCase(TestCase):

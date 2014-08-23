@@ -36,11 +36,11 @@ class MenuItemFormMixin(object):
         if content_type and object_id:
             try:
                 obj = content_type.get_object_for_this_type(pk=object_id)
-            except ObjectDoesNotExist, e:
+            except ObjectDoesNotExist as e:
                 raise forms.ValidationError(str(e))
             try:
                 obj.get_absolute_url()
-            except AttributeError, e:
+            except AttributeError as e:
                 raise forms.ValidationError(str(e))
 
         if 'is_enabled' in self.cleaned_data and \
