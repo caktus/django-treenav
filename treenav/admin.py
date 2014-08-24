@@ -2,6 +2,7 @@ from functools import update_wrapper
 from django.conf.urls import patterns, url
 from django.contrib import admin
 from django.contrib.contenttypes import generic
+from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
@@ -85,7 +86,8 @@ class MenuItemAdmin(MPTTModelAdmin):
             item.save()  # refreshes the HREF
         self.message_user(request, _('Menu item HREFs refreshed successfully.'))
         info = self.model._meta.app_label, self.model._meta.module_name
-        return redirect('admin:%s_%s_changelist' % info)
+        changelist_url = reverse('admin:%s_%s_changelist' % info, current_app=self.admin_site.name)
+        return redirect(changelist_url)
 
     def clean_cache(self, request):
         """
@@ -94,7 +96,8 @@ class MenuItemAdmin(MPTTModelAdmin):
         treenav.delete_cache()
         self.message_user(request, _('Cache menuitem cache cleaned successfully.'))
         info = self.model._meta.app_label, self.model._meta.module_name
-        return redirect('admin:%s_%s_changelist' % info)
+        changelist_url = reverse('admin:%s_%s_changelist' % info, current_app=self.admin_site.name)
+        return redirect(changelist_url)
 
 
 admin.site.register(treenav.MenuItem, MenuItemAdmin)
