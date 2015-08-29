@@ -74,6 +74,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         urls = patterns('',  # noqa
             url(r'^refresh-hrefs/$', wrap(self.refresh_hrefs), name='treenav_refresh_hrefs'),
             url(r'^clean-cache/$', wrap(self.clean_cache), name='treenav_clean_cache'),
+            url(r'^rebuild-tree/$', wrap(self.rebuild_tree), name='treenav_rebuild_tree')
         ) + urls
         return urls
 
@@ -95,6 +96,14 @@ class MenuItemAdmin(MPTTModelAdmin):
         self.message_user(request, _('Cache menuitem cache cleaned successfully.'))
         info = self.model._meta.app_label, self.model._meta.module_name
         return redirect('admin:%s_%s_changelist' % info)
+
+    def rebuild_tree(self, request):
+        '''
+        Rebuilds the tree and clears the cache.
+        '''
+        self.model.tree.rebuild()
+        self.message_user(request, _('Menu Tree Rebuilt.'))
+        return self.clean_cache(request)
 
 
 admin.site.register(treenav.MenuItem, MenuItemAdmin)
