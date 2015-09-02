@@ -4,6 +4,11 @@ Release History
 Release and change history for django-treenav
 
 
+v0.9.2 (Released 2015-09-02)
+------------------------------------
+
+- Add 'Rebuild Tree' button for MenuItem admin
+
 v0.9.1 (Released 2012-10-26)
 ------------------------------------
 
