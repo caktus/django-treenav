@@ -10,6 +10,7 @@ vNEXT (Released DATE)
 - Confirmed support for Django 1.7
 - Dropped support for Django prior to 1.4
 - Setup Travis
+- Add docs for 'Rebuild Tree' admin action.
 
 v0.9.2 (Released 2015-09-02)
 ------------------------------------
