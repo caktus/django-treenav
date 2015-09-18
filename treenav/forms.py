@@ -56,12 +56,14 @@ class MenuItemForm(MenuItemFormMixin, MPTTAdminForm):
 
     class Meta:
         model = MenuItem
+        fields = "__all__"
 
 
 class MenuItemInlineForm(MenuItemFormMixin, forms.ModelForm):
 
     class Meta:
         model = MenuItem
+        fields = "__all__"
 
 
 class GenericInlineMenuItemForm(forms.ModelForm):
