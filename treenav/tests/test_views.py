@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.template.context import Context
-from django.template import compile_string, StringOrigin
+from django.template import Template
 
 from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
@@ -63,8 +63,7 @@ class TreeNavTestCase(TestCase):
         self.root.to_tree()
 
     def compile_string(self, url, template_str):
-        origin = StringOrigin(url)
-        return compile_string(template_str, origin).render(Context())
+        return Template(template_str).render(Context())
 
     def test_non_unique_form_save(self):
         dup = MenuItemForm({
@@ -238,7 +237,7 @@ class RefreshViewTestCase(TestCase):
         self.superuser.is_superuser = True
         self.superuser.save()
         self.refresh_url = reverse('admin:treenav_refresh_hrefs')
-        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        info = MenuItem._meta.app_label, MenuItem._meta.model_name
         self.changelist_url = reverse('admin:%s_%s_changelist' % info)
         self.client.login(username='test', password='test')
 
@@ -285,7 +284,7 @@ class ClearCacheViewTestCase(TestCase):
         self.superuser.is_superuser = True
         self.superuser.save()
         self.cache_url = reverse('admin:treenav_clean_cache')
-        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        info = MenuItem._meta.app_label, MenuItem._meta.model_name
         self.changelist_url = reverse('admin:%s_%s_changelist' % info)
         self.client.login(username='test', password='test')
 
