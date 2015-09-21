@@ -41,14 +41,14 @@ class TreeNavTestCase(TestCase):
             'slug': 'about-us',
             'order': 9,
         })
-        second_level = self.create_menu_item(**{
+        self.second_level = self.create_menu_item(**{
             'parent': self.child,
             'label': 'Second',
             'slug': 'second',
             'order': 0,
         })
         self.third_level = self.create_menu_item(**{
-            'parent': second_level,
+            'parent': self.second_level,
             'label': 'Third',
             'slug': 'third',
             'order': 0,
@@ -73,17 +73,42 @@ class TreeNavTestCase(TestCase):
         })
         self.assertFalse(dup.is_valid(), 'Form says a duplicate slug is valid.')
 
-    def test_single_level_menu(self):
+    def test_single_level_menu_root(self):
         template_str = """{% load treenav_tags %}
         {% single_level_menu "primary-nav" 0 %}
         """
-        self.compile_string("/", template_str)
+        result = self.compile_string("/", template_str)
+        self.assertNotIn(self.second_level.label, result)
+
+    def test_single_level_menu_about_us(self):
+        template_str = """{% load treenav_tags %}
+        {% single_level_menu "about-us" 0 %}
+        """
+        result = self.compile_string("/", template_str)
+        self.assertIn(self.second_level.label, result)
 
     def test_show_treenav(self):
         template_str = """{% load treenav_tags %}
         {% show_treenav "primary-nav" %}
         """
-        self.compile_string("/", template_str)
+        result = self.compile_string("/", template_str)
+        self.assertNotIn(self.second_level.label, result)
+
+    def test_single_level_menu_show_treenav_equality(self):  # necessary?
+        """Tests that the single_level_menu and show_treenav tags output the
+        same for the top level of the tree.
+        """
+        template_str = """{% load treenav_tags %}
+        {% single_level_menu "primary-nav" 0 %}
+        """
+        single_level_menu_result = self.compile_string("/", template_str)
+
+        template_str = """{% load treenav_tags %}
+        {% show_treenav "primary-nav" %}
+        """
+        show_treenav_result = self.compile_string("/", template_str)
+
+        self.assertEqual(single_level_menu_result, show_treenav_result)
 
     def test_show_treenav_third_level(self):
         template_str = """{% load treenav_tags %}
