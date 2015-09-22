@@ -1,5 +1,5 @@
 from functools import update_wrapper
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.contenttypes import generic
 from django.shortcuts import redirect
@@ -71,11 +71,11 @@ class MenuItemAdmin(MPTTModelAdmin):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        urls = patterns('',  # noqa
+        urls = [
             url(r'^refresh-hrefs/$', wrap(self.refresh_hrefs), name='treenav_refresh_hrefs'),
             url(r'^clean-cache/$', wrap(self.clean_cache), name='treenav_clean_cache'),
             url(r'^rebuild-tree/$', wrap(self.rebuild_tree), name='treenav_rebuild_tree')
-        ) + urls
+        ] + urls
         return urls
 
     def refresh_hrefs(self, request):
@@ -85,7 +85,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         for item in treenav.MenuItem.objects.all():
             item.save()  # refreshes the HREF
         self.message_user(request, _('Menu item HREFs refreshed successfully.'))
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
         return redirect('admin:%s_%s_changelist' % info)
 
     def clean_cache(self, request):
@@ -94,7 +94,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         """
         treenav.delete_cache()
         self.message_user(request, _('Cache menuitem cache cleaned successfully.'))
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
         return redirect('admin:%s_%s_changelist' % info)
 
     def rebuild_tree(self, request):

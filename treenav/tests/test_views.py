@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.template.context import Context
-from django.template import compile_string, StringOrigin
+from django.template import Template
 
 from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
@@ -41,14 +41,14 @@ class TreeNavTestCase(TestCase):
             'slug': 'about-us',
             'order': 9,
         })
-        second_level = self.create_menu_item(**{
+        self.second_level = self.create_menu_item(**{
             'parent': self.child,
             'label': 'Second',
             'slug': 'second',
             'order': 0,
         })
         self.third_level = self.create_menu_item(**{
-            'parent': second_level,
+            'parent': self.second_level,
             'label': 'Third',
             'slug': 'third',
             'order': 0,
@@ -63,8 +63,7 @@ class TreeNavTestCase(TestCase):
         self.root.to_tree()
 
     def compile_string(self, url, template_str):
-        origin = StringOrigin(url)
-        return compile_string(template_str, origin).render(Context())
+        return Template(template_str).render(Context())
 
     def test_non_unique_form_save(self):
         dup = MenuItemForm({
@@ -74,17 +73,42 @@ class TreeNavTestCase(TestCase):
         })
         self.assertFalse(dup.is_valid(), 'Form says a duplicate slug is valid.')
 
-    def test_single_level_menu(self):
+    def test_single_level_menu_root(self):
         template_str = """{% load treenav_tags %}
         {% single_level_menu "primary-nav" 0 %}
         """
-        self.compile_string("/", template_str)
+        result = self.compile_string("/", template_str)
+        self.assertNotIn(self.second_level.label, result)
+
+    def test_single_level_menu_about_us(self):
+        template_str = """{% load treenav_tags %}
+        {% single_level_menu "about-us" 0 %}
+        """
+        result = self.compile_string("/", template_str)
+        self.assertIn(self.second_level.label, result)
 
     def test_show_treenav(self):
         template_str = """{% load treenav_tags %}
         {% show_treenav "primary-nav" %}
         """
-        self.compile_string("/", template_str)
+        result = self.compile_string("/", template_str)
+        self.assertNotIn(self.second_level.label, result)
+
+    def test_single_level_menu_show_treenav_equality(self):  # necessary?
+        """Tests that the single_level_menu and show_treenav tags output the
+        same for the top level of the tree.
+        """
+        template_str = """{% load treenav_tags %}
+        {% single_level_menu "primary-nav" 0 %}
+        """
+        single_level_menu_result = self.compile_string("/", template_str)
+
+        template_str = """{% load treenav_tags %}
+        {% show_treenav "primary-nav" %}
+        """
+        show_treenav_result = self.compile_string("/", template_str)
+
+        self.assertEqual(single_level_menu_result, show_treenav_result)
 
     def test_show_treenav_third_level(self):
         template_str = """{% load treenav_tags %}
@@ -238,7 +262,7 @@ class RefreshViewTestCase(TestCase):
         self.superuser.is_superuser = True
         self.superuser.save()
         self.refresh_url = reverse('admin:treenav_refresh_hrefs')
-        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        info = MenuItem._meta.app_label, MenuItem._meta.model_name
         self.changelist_url = reverse('admin:%s_%s_changelist' % info)
         self.client.login(username='test', password='test')
 
@@ -285,7 +309,7 @@ class ClearCacheViewTestCase(TestCase):
         self.superuser.is_superuser = True
         self.superuser.save()
         self.cache_url = reverse('admin:treenav_clean_cache')
-        info = MenuItem._meta.app_label, MenuItem._meta.module_name
+        info = MenuItem._meta.app_label, MenuItem._meta.model_name
         self.changelist_url = reverse('admin:%s_%s_changelist' % info)
         self.client.login(username='test', password='test')
 

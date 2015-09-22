@@ -85,7 +85,7 @@ class MenuUnCacheQuerySet(QuerySet):
 
 
 class MenuItemManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return MenuUnCacheQuerySet(self.model)
 
 
