@@ -1,7 +1,7 @@
 from functools import update_wrapper
 from django.conf.urls import url
 from django.contrib import admin
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.admin import GenericStackedInline
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,7 +11,7 @@ from treenav import models as treenav
 from treenav.forms import MenuItemForm, MenuItemInlineForm, GenericInlineMenuItemForm
 
 
-class GenericMenuItemInline(generic.GenericStackedInline):
+class GenericMenuItemInline(GenericStackedInline):
     """
     Add this inline to your admin class to support editing related menu items
     from that model's admin page.
