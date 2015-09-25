@@ -432,7 +432,9 @@ class SimultaneousReorderTestCase(TestCase):
                      })
         self.client.post(self.changeform_url, data)
         order = self.root.get_children()
+        # Check if children are in the correct order
         self.assertEqual(order[0], self.blog)
         self.assertEqual(order[1], self.home)
+        # Check if the lft and rght attributes assigned by mptt are correct
         self.assertNotEqual(order[0].lft, order[1].lft)
         self.assertNotEqual(order[0].rght, order[1].rght)
