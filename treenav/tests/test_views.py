@@ -384,52 +384,52 @@ class SimultaneousReorderTestCase(TestCase):
                 }
         # Now update the post dict with inline form info
         data.update({'children-TOTAL_FORMS': 3,
-                            'children-INITIAL_FORMS': 2,
-                            'children-MAX_NUM_FORMS': 1000
-                            })
+                     'children-INITIAL_FORMS': 2,
+                     'children-MAX_NUM_FORMS': 1000
+                     })
         # Update the post dict with the children, swapping their order values
         data.update({'children-0-id': 3,
-                            'children-0-parent': 1,
-                            'children-0-label': 'Home',
-                            'children-0-slug': 'home',
-                            'children-0-order': 4,
-                            'children-0-is_enabled': 'on',
-                            'children-0-link': '',
-                            'children-0-content_type': '',
-                            'children-0-object_id': '',
-                            'children-1-id': 2,
-                            'children-1-parent': 1,
-                            'children-1-label': 'Our Blog',
-                            'children-1-slug': 'our-blog',
-                            'children-1-order': 0,
-                            'children-1-is_enabled': 'on',
-                            'children-1-link': '',
-                            'children-1-content_type': '',
-                            'children-1-object_id': ''
-                            })
+                     'children-0-parent': 1,
+                     'children-0-label': 'Home',
+                     'children-0-slug': 'home',
+                     'children-0-order': 4,
+                     'children-0-is_enabled': 'on',
+                     'children-0-link': '',
+                     'children-0-content_type': '',
+                     'children-0-object_id': '',
+                     'children-1-id': 2,
+                     'children-1-parent': 1,
+                     'children-1-label': 'Our Blog',
+                     'children-1-slug': 'our-blog',
+                     'children-1-order': 0,
+                     'children-1-is_enabled': 'on',
+                     'children-1-link': '',
+                     'children-1-content_type': '',
+                     'children-1-object_id': ''
+                     })
         # Update the post dict with the empty inline form entry
         data.update({'children-2-id': '',
-                            'children-2-parent': 1,
-                            'children-2-label': '',
-                            'children-2-slug': '',
-                            'children-2-order': '',
-                            'children-2-is_enabled': 'on',
-                            'children-2-link': '',
-                            'children-2-content_type': '',
-                            'children-2-object_id': ''
-                            })
+                     'children-2-parent': 1,
+                     'children-2-label': '',
+                     'children-2-slug': '',
+                     'children-2-order': '',
+                     'children-2-is_enabled': 'on',
+                     'children-2-link': '',
+                     'children-2-content_type': '',
+                     'children-2-object_id': ''
+                     })
         # Update the post dict with the end of the form
         data.update({'children-__prefix__-id': '',
-                            'children-__prefix__-parent': 1,
-                            'children-__prefix__-label': '',
-                            'children-__prefix__-slug': '',
-                            'children-__prefix__-order': '',
-                            'children-__prefix__-is_enabled': 'on',
-                            'children-__prefix__-link': '',
-                            'children-__prefix__-content_type': '',
-                            'children-__prefix__-object_id': '',
-                            '_save': 'Save'
-                            })
+                     'children-__prefix__-parent': 1,
+                     'children-__prefix__-label': '',
+                     'children-__prefix__-slug': '',
+                     'children-__prefix__-order': '',
+                     'children-__prefix__-is_enabled': 'on',
+                     'children-__prefix__-link': '',
+                     'children-__prefix__-content_type': '',
+                     'children-__prefix__-object_id': '',
+                     '_save': 'Save'
+                     })
         self.client.post(self.changeform_url, data)
         order = self.root.get_children()
         self.assertEqual(order[0], self.blog)
