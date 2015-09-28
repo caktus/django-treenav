@@ -84,9 +84,10 @@ class MenuUnCacheQuerySet(QuerySet):
         super(MenuUnCacheQuerySet, self).update(*args, **kwargs)
 
 
-class MenuItemManager(models.Manager):
+class MenuItemManager(TreeManager):
     def get_queryset(self):
-        return MenuUnCacheQuerySet(self.model)
+        queryset = MenuUnCacheQuerySet(self.model)
+        return queryset.order_by(self.tree_id_attr, self.left_attr)
 
 
 class MenuItem(MPTTModel):
