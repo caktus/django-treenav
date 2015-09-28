@@ -207,13 +207,13 @@ class TreeNavViewTestCase(TestCase):
         )
 
     def test_tags_level(self):
-        url = reverse('treenav.tests.urls.test_view', args=('home',))
+        url = reverse('test_view', args=('home',))
         response = self.client.post(url, {'pslug': 'primary-nav', 'N': 0})
         self.assertEqual(response.content.decode('utf-8').count('<li'), 3)
         self.assertContains(response, 'depth-0')
 
     def test_tags_no_page(self):
-        url = reverse('treenav.tests.urls.test_view', args=('notthere',))
+        url = reverse('test_view', args=('notthere',))
         response = self.client.post(url, {'pslug': 'primary-nav', 'N': 0})
         self.assertEqual(response.content.decode('utf-8').count('<li'), 3)
         self.assertContains(response, 'depth-0')
@@ -225,12 +225,12 @@ class TreeNavViewTestCase(TestCase):
             slug='second-level',
             order=10,
         )
-        url = reverse('treenav.tests.urls.test_view', args=('home',))
+        url = reverse('test_view', args=('home',))
         response = self.client.post(url, {'pslug': 'about-us', 'N': 0})
         self.assertEqual(response.content.decode('utf-8').count('<li'), 1)
 
     def test_tags_improper(self):
-        url = reverse('treenav.tests.urls.test_view', args=('home',))
+        url = reverse('test_view', args=('home',))
         response = self.client.post(url, {'pslug': 'no-nav', 'N': 10000})
         self.assertNotContains(response, '<ul')
 
