@@ -105,5 +105,12 @@ class MenuItemAdmin(MPTTModelAdmin):
         self.message_user(request, _('Menu Tree Rebuilt.'))
         return self.clean_cache(request)
 
+    def save_related(self, request, form, formsets, change):
+        """
+        Rebuilds the tree after saving items related to parent.
+        """
+        super(MenuItemAdmin, self).save_related(request, form, formsets, change)
+        self.model.tree.rebuild()
+
 
 admin.site.register(treenav.MenuItem, MenuItemAdmin)
