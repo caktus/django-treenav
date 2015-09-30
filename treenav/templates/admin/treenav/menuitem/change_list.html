@@ -1,8 +1,12 @@
 {% extends "admin/mptt_change_list.html" %}
 {% load i18n %}
-{% load url from future %}
 
 {% block object-tools-items %}
+    <li>
+      <a href="{% url 'admin:treenav_rebuild_tree' %}{% if is_popup %}?_popup=1{% endif %}" title="{% trans 'Rebuild Tree, reordering items and clear the cache' %}">
+        {% trans 'Rebuild Tree' %}
+      </a>
+    </li>
     <li>
       <a href="{% url 'admin:treenav_clean_cache' %}{% if is_popup %}?_popup=1{% endif %}" title="{% trans 'Remove all MenuItems from Cache' %}">
         {% trans 'Clean Menu Cache' %}

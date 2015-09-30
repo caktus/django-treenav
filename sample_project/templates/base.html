@@ -20,7 +20,7 @@
     <body>
         {% load treenav_tags %}
         <h1>django-treenav</h1>
-        <p>To view a demo, create a new menu tree in the Django <a href='{% url admin:index %}'>admin</a> and set the root menu item slug to "primary-nav".</p>
+        <p>To view a demo, create a new menu tree in the Django <a href='{% url 'admin:index' %}'>admin</a> and set the root menu item slug to "primary-nav".</p>
         <h2>show_treenav</h2>
         {% show_treenav "primary-nav" %}
         <h2>single_level_menu</h2>
