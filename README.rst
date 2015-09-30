@@ -50,8 +50,8 @@ Features
 
 Requirements
 ------------
-- `django <https://github.com/django/django/>`_ >= 1.4.2
-- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.5.2
+- `django <https://github.com/django/django/>`_ >= 1.7.10
+- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.7.0
 
 Using the demo
 --------------
@@ -88,17 +88,29 @@ Installation
 
 #. Include these context processors::
 
+    Django 1.7::
     TEMPLATE_CONTEXT_PROCESSORS = (
         "django.core.context_processors.request",
         "treenav.context_processors.treenav_active",
     )
 
+    Django >= 1.8::
+    TEMPLATES = [
+      {
+        'OPTIONS': {
+          'context_processors': [
+            "django.template.context_processors.request",
+            "treenav.context_processors.treenav_active",
+          ],
+        },
+      },
+    ]
 
 #. Add these urls::
 
-    urlpatterns = patterns('',
+    urlpatterns = [
         (r'^treenav/', include('treenav.urls')),
-    )
+    ]
 
 
 Development sponsored by `Caktus Consulting Group, LLC
