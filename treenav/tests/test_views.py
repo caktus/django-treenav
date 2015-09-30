@@ -13,6 +13,7 @@ from treenav.models import MenuItem, Item
 from treenav.forms import MenuItemForm
 from treenav.tests import Team
 
+
 @override_settings(ROOT_URLCONF='treenav.tests.urls')
 class TreeNavTestCase(TestCase):
 
