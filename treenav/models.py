@@ -3,7 +3,7 @@ import re
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes import fields
 from django.db.models.signals import post_save
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -85,7 +85,7 @@ class MenuUnCacheQuerySet(QuerySet):
 
 
 class MenuItemManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return MenuUnCacheQuerySet(self.model)
 
 
@@ -123,7 +123,7 @@ class MenuItem(MPTTModel):
         null=True,
         blank=True,
     )
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = fields.GenericForeignKey('content_type', 'object_id')
     href = models.CharField(_('href'), editable=False, max_length=255)
 
     objects = MenuItemManager()

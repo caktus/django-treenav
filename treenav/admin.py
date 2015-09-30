@@ -1,8 +1,8 @@
 from functools import update_wrapper
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
-from django.contrib.contenttypes import generic
 from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.admin import GenericStackedInline
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,7 +12,7 @@ from treenav import models as treenav
 from treenav.forms import MenuItemForm, MenuItemInlineForm, GenericInlineMenuItemForm
 
 
-class GenericMenuItemInline(generic.GenericStackedInline):
+class GenericMenuItemInline(GenericStackedInline):
     """
     Add this inline to your admin class to support editing related menu items
     from that model's admin page.
@@ -72,10 +72,11 @@ class MenuItemAdmin(MPTTModelAdmin):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        urls = patterns('',  # noqa
+        urls = [
             url(r'^refresh-hrefs/$', wrap(self.refresh_hrefs), name='treenav_refresh_hrefs'),
             url(r'^clean-cache/$', wrap(self.clean_cache), name='treenav_clean_cache'),
-        ) + urls
+            url(r'^rebuild-tree/$', wrap(self.rebuild_tree), name='treenav_rebuild_tree')
+        ] + urls
         return urls
 
     def refresh_hrefs(self, request):
@@ -85,7 +86,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         for item in treenav.MenuItem.objects.all():
             item.save()  # refreshes the HREF
         self.message_user(request, _('Menu item HREFs refreshed successfully.'))
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
         changelist_url = reverse('admin:%s_%s_changelist' % info, current_app=self.admin_site.name)
         return redirect(changelist_url)
 
@@ -95,9 +96,24 @@ class MenuItemAdmin(MPTTModelAdmin):
         """
         treenav.delete_cache()
         self.message_user(request, _('Cache menuitem cache cleaned successfully.'))
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
         changelist_url = reverse('admin:%s_%s_changelist' % info, current_app=self.admin_site.name)
         return redirect(changelist_url)
+
+    def rebuild_tree(self, request):
+        '''
+        Rebuilds the tree and clears the cache.
+        '''
+        self.model.tree.rebuild()
+        self.message_user(request, _('Menu Tree Rebuilt.'))
+        return self.clean_cache(request)
+
+    def save_related(self, request, form, formsets, change):
+        """
+        Rebuilds the tree after saving items related to parent.
+        """
+        super(MenuItemAdmin, self).save_related(request, form, formsets, change)
+        self.model.tree.rebuild()
 
 
 admin.site.register(treenav.MenuItem, MenuItemAdmin)

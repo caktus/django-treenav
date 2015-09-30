@@ -1,7 +1,6 @@
 from django import template
 from django.core.cache import cache
 from django.template.loader import render_to_string
-from django.template import RequestContext, Context
 
 from treenav.models import MenuItem
 from treenav.templatetags import CaktNode, parse_args_kwargs
@@ -25,9 +24,9 @@ def get_menu_item(slug):
 def new_context(parent_context):
     """ Create new context rather than modifying parent context """
     if 'request' in parent_context:
-        return RequestContext(parent_context['request'])
+        return {'request': parent_context['request']}
     else:
-        return Context()
+        return {}
 
 
 class SingleLevelMenuNode(CaktNode):
