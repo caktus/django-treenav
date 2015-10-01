@@ -116,9 +116,12 @@ class MenuItem(MPTTModel):
         null=True,
         blank=True,
     )
-    object_id = models.PositiveIntegerField(
-        null=True,
+    object_id = models.CharField(
+        # use a CharField to be able to point to tables with UUID pks
+        max_length=36,
         blank=True,
+        db_index=True,
+        default=''
     )
     content_object = fields.GenericForeignKey('content_type', 'object_id')
     href = models.CharField(_('href'), editable=False, max_length=255)
