@@ -381,8 +381,8 @@ class SimultaneousReorderTestCase(TestCase):
         self.superuser.is_staff = True
         self.superuser.is_superuser = True
         self.superuser.save()
-        info = MenuItem._meta.app_label, MenuItem._meta.model_name
-        self.changeform_url = reverse('admin:%s_%s_change' % info, args=(1,))
+        self.info = MenuItem._meta.app_label, MenuItem._meta.model_name
+        self.changeform_url = reverse('admin:%s_%s_change' % self.info, args=(1,))
         self.client.login(username='test', password='test')
 
     def test_reorder(self):
