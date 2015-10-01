@@ -3,7 +3,14 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.template import Template, Context
 
 from django.contrib import admin
+
+from ..admin import MenuItemAdmin
+from ..models import MenuItem
+
 admin.autodiscover()
+# create a second Admin site and register MenuItem against it
+site2 = admin.AdminSite(name='admin2')
+site2.register(MenuItem, MenuItemAdmin)
 
 
 def test_view(request, item_slug):
@@ -27,6 +34,7 @@ handler404 = test_404  # noqa
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin2/', include(site2.urls)),
     url(r'^item/(?P<item_slug>[\w-]+)/$', test_view, name='test_view'),
     url(r'^old/', include('treenav.urls')),
 ]

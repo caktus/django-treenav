@@ -260,8 +260,8 @@ class RefreshViewTestCase(TestCase):
         self.superuser.is_superuser = True
         self.superuser.save()
         self.refresh_url = reverse('admin:treenav_refresh_hrefs')
-        info = MenuItem._meta.app_label, MenuItem._meta.model_name
-        self.changelist_url = reverse('admin:%s_%s_changelist' % info)
+        self.info = MenuItem._meta.app_label, MenuItem._meta.model_name
+        self.changelist_url = reverse('admin:%s_%s_changelist' % self.info)
         self.client.login(username='test', password='test')
 
     def test_trigger_refresh(self):
@@ -286,6 +286,15 @@ class RefreshViewTestCase(TestCase):
         self.assertEqual(menu.href, team.get_absolute_url())
         self.assertEqual(len(response.context['messages']), 1)
 
+    def test_trigger_refresh_redirects_to_custom_admin(self):
+        "Trigger update of menu item HREFs for a second custom admin."
+        refresh_url = reverse('admin:treenav_refresh_hrefs',
+                              current_app='admin2')
+        response = self.client.get(refresh_url, follow=True)
+        changelist_url = reverse('admin:%s_%s_changelist' % self.info,
+                                 current_app='admin2')
+        self.assertRedirects(response, changelist_url)
+
     def test_no_permission(self):
         "Non-staff cannot trigger the refresh."
         self.superuser.is_staff = False
@@ -306,12 +315,12 @@ class ClearCacheViewTestCase(TestCase):
         self.superuser.is_superuser = True
         self.superuser.save()
         self.cache_url = reverse('admin:treenav_clean_cache')
-        info = MenuItem._meta.app_label, MenuItem._meta.model_name
-        self.changelist_url = reverse('admin:%s_%s_changelist' % info)
+        self.info = MenuItem._meta.app_label, MenuItem._meta.model_name
+        self.changelist_url = reverse('admin:%s_%s_changelist' % self.info)
         self.client.login(username='test', password='test')
 
     def test_reset_cache(self):
-        "Trigger update of menu item HREFs."
+        "Clear MenuItems from cache."
         menu = self.create_menu_item(
             label='Our Blog',
             slug='our-blog',
@@ -327,6 +336,15 @@ class ClearCacheViewTestCase(TestCase):
         # Cache should be recycled
         current = cache.get('menu-tree-%s' % menu.slug)
         self.assertNotEqual(current, 'INVALID!!!')
+
+    def test_reset_cache_redirects_to_custom_admin(self):
+        "After cleaning cache, redirects to custom admin."
+        cache_url = reverse('admin:treenav_clean_cache',
+                            current_app='admin2')
+        response = self.client.get(cache_url, follow=True)
+        changelist_url = reverse('admin:%s_%s_changelist' % self.info,
+                                 current_app='admin2')
+        self.assertRedirects(response, changelist_url)
 
     def test_no_permission(self):
         "Non-staff cannot clear the cache."
@@ -363,8 +381,8 @@ class SimultaneousReorderTestCase(TestCase):
         self.superuser.is_staff = True
         self.superuser.is_superuser = True
         self.superuser.save()
-        info = MenuItem._meta.app_label, MenuItem._meta.model_name
-        self.changeform_url = reverse('admin:%s_%s_change' % info, args=(1,))
+        self.info = MenuItem._meta.app_label, MenuItem._meta.model_name
+        self.changeform_url = reverse('admin:%s_%s_change' % self.info, args=(1,))
         self.client.login(username='test', password='test')
 
     def test_reorder(self):
