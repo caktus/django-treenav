@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.template.context import Context
 from django.template import Template
+from django.test import override_settings
 
 from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
@@ -13,9 +14,8 @@ from treenav.forms import MenuItemForm
 from treenav.tests import Team
 
 
+@override_settings(ROOT_URLCONF='treenav.tests.urls')
 class TreeNavTestCase(TestCase):
-
-    urls = 'treenav.tests.urls'
 
     def setUp(self):
         self.root = self.create_menu_item(**{
@@ -177,9 +177,8 @@ class TreeNavTestCase(TestCase):
         self.assertEqual(active_item.node, self.child)
 
 
+@override_settings(ROOT_URLCONF='treenav.tests.urls')
 class TreeNavViewTestCase(TestCase):
-
-    urls = 'treenav.tests.urls'
 
     def setUp(self):
         self.root = self.create_menu_item(
@@ -251,10 +250,9 @@ class TreeNavViewTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+@override_settings(ROOT_URLCONF='treenav.tests.urls')
 class RefreshViewTestCase(TestCase):
     "Admin view to trigger refresh of hrefs."
-
-    urls = 'treenav.tests.urls'
 
     def setUp(self):
         self.superuser = User.objects.create_user('test', '', 'test')
@@ -298,10 +296,9 @@ class RefreshViewTestCase(TestCase):
         self.assertEqual(len(response.context['messages']), 0)
 
 
+@override_settings(ROOT_URLCONF='treenav.tests.urls')
 class ClearCacheViewTestCase(TestCase):
     "Admin view to clear menu cache."
-
-    urls = 'treenav.tests.urls'
 
     def setUp(self):
         self.superuser = User.objects.create_user('test', '', 'test')
@@ -341,9 +338,8 @@ class ClearCacheViewTestCase(TestCase):
         self.assertEqual(len(response.context['messages']), 0)
 
 
+@override_settings(ROOT_URLCONF='treenav.tests.urls')
 class SimultaneousReorderTestCase(TestCase):
-
-    urls = 'treenav.tests.urls'
 
     def setUp(self):
         self.root = self.create_menu_item(

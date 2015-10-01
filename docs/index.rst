@@ -12,16 +12,16 @@ Contents
 
 .. toctree::
     :maxdepth: 2
-   
+
     setup
     template_tags
+    troubleshooting
     releases
 
-   
+
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

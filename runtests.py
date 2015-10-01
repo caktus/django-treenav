@@ -40,6 +40,27 @@ if not settings.configured:
             "django.core.context_processors.request",
             "treenav.context_processors.treenav_active",
         ),
+        TEMPLATES=[
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': [],
+                'APP_DIRS': True,
+                'OPTIONS': {
+                    'context_processors': [
+                        'django.contrib.auth.context_processors.auth',
+                        'django.template.context_processors.debug',
+                        'django.template.context_processors.i18n',
+                        'django.template.context_processors.media',
+                        'django.template.context_processors.static',
+                        'django.template.context_processors.tz',
+                        'django.contrib.messages.context_processors.messages',
+                        "django.template.context_processors.request",
+                        "treenav.context_processors.treenav_active",
+                    ],
+                },
+            },
+        ],
+
         SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
         ROOT_URLCONF='treenav.tests.urls',
     )
