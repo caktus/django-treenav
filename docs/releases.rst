@@ -6,7 +6,10 @@ Release and change history for django-treenav
 vNEXT (Released DATE)
 ---------------------
 
-v1.0.0 (Released 2015-)
+- To be determined
+
+
+v1.0.0 (Released 2015-10-01)
 ------------------------------------
 
 This is a stable release supporting Django 1.8 and Python 3.
