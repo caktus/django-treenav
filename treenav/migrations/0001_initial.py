@@ -1,61 +1,37 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import mptt.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'MenuItem'
-        db.create_table('treenav_menuitem', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='children', null=True, to=orm['treenav.MenuItem'])),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('slug', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('order', self.gf('django.db.models.fields.IntegerField')()),
-            ('is_enabled', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'], null=True, blank=True)),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
-            ('href', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('lft', self.gf('django.db.models.fields.PositiveIntegerField')(db_index=True)),
-            ('rght', self.gf('django.db.models.fields.PositiveIntegerField')(db_index=True)),
-            ('tree_id', self.gf('django.db.models.fields.PositiveIntegerField')(db_index=True)),
-            ('level', self.gf('django.db.models.fields.PositiveIntegerField')(db_index=True)),
-        ))
-        db.send_create_signal('treenav', ['MenuItem'])
+    dependencies = [
+        ('contenttypes', '0001_initial'),
+    ]
 
-    def backwards(self, orm):
-        # Deleting model 'MenuItem'
-        db.delete_table('treenav_menuitem')
-
-    models = {
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'treenav.menuitem': {
-            'Meta': {'ordering': "('lft', 'tree_id')", 'object_name': 'MenuItem'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
-            'href': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_enabled': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'label': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'link': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['treenav.MenuItem']"}),
-            'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'slug': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
-        }
-    }
-
-    complete_apps = ['treenav']
+    operations = [
+        migrations.CreateModel(
+            name='MenuItem',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('label', models.CharField(help_text=b'The display name on the web site.', max_length=255, verbose_name='label')),
+                ('slug', models.SlugField(help_text=b'Unique identifier for this menu item (also CSS ID)', unique=True, max_length=255, verbose_name='slug')),
+                ('order', models.IntegerField(verbose_name='order', choices=[(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14), (15, 15), (16, 16), (17, 17), (18, 18), (19, 19), (20, 20), (21, 21), (22, 22), (23, 23), (24, 24), (25, 25), (26, 26), (27, 27), (28, 28), (29, 29), (30, 30), (31, 31), (32, 32), (33, 33), (34, 34), (35, 35), (36, 36), (37, 37), (38, 38), (39, 39), (40, 40), (41, 41), (42, 42), (43, 43), (44, 44), (45, 45), (46, 46), (47, 47), (48, 48), (49, 49), (50, 50)])),
+                ('is_enabled', models.BooleanField(default=True)),
+                ('link', models.CharField(help_text=b'The view of the page you want to link to, as a python path or the shortened URL name.', max_length=255, verbose_name='link', blank=True)),
+                ('object_id', models.PositiveIntegerField(null=True, blank=True)),
+                ('href', models.CharField(verbose_name='href', max_length=255, editable=False)),
+                ('lft', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('level', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='treenav.MenuItem', null=True)),
+            ],
+            options={
+                'ordering': ('lft', 'tree_id'),
+            },
+        ),
+    ]
