@@ -58,13 +58,13 @@ Using the demo
 
 For a quick demo, follow these steps::
 
-    $ mkvirtualenv --distribute --no-site-packages django-treenav
+    $ mkvirtualenv --no-site-packages django-treenav
     (django-treenav)$ git clone git://github.com/caktus/django-treenav.git
     (django-treenav)$ cd django-treenav/
     (django-treenav)~/django-treenav$ python setup.py develop
     (django-treenav)~/django-treenav$ cd sample_project/
     (django-treenav)~/django-treenav/sample_project$ pip install -r requirements.txt
-    (django-treenav)~/django-treenav/sample_project$ ./manage.py syncdb
+    (django-treenav)~/django-treenav/sample_project$ ./manage.py migrate
     (django-treenav)~/django-treenav/sample_project$ ./manage.py runserver
 
 Visit http://localhost:8000/ in your browser and follow the instructions.
@@ -86,15 +86,17 @@ Installation
     )
 
 
-#. Include these context processors::
+#. Include these context processors:
 
-    Django 1.7::
+- Django 1.7::
+
     TEMPLATE_CONTEXT_PROCESSORS = (
         "django.core.context_processors.request",
         "treenav.context_processors.treenav_active",
     )
 
-    Django >= 1.8::
+- Django >= 1.8::
+
     TEMPLATES = [
       {
         'OPTIONS': {
@@ -109,7 +111,7 @@ Installation
 #. Add these urls::
 
     urlpatterns = [
-        (r'^treenav/', include('treenav.urls')),
+        url(r'^treenav/', include('treenav.urls')),
     ]
 
 
