@@ -18,7 +18,7 @@ This is a stable release supporting Django 1.8 and Python 3.
 - Dropped support for Django prior to 1.7
 - Dropped support for Python 2 prior to 2.7
 - Dropped support for Python 3 prior to 3.3
-- Dropped support for django-mptt prior to 0.5
+- Dropped support for django-mptt prior to 0.7
 - Setup Travis (#27)
 - Add docs for 'Rebuild Tree' admin action.
 - Updated Tox (#45) and Travis (#50) to work with Tox 2.0
