@@ -101,7 +101,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         '''
         Rebuilds the tree and clears the cache.
         '''
-        self.model.tree.rebuild()
+        self.model.objects.rebuild()
         self.message_user(request, _('Menu Tree Rebuilt.'))
         return self.clean_cache(request)
 
@@ -110,7 +110,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         Rebuilds the tree after saving items related to parent.
         """
         super(MenuItemAdmin, self).save_related(request, form, formsets, change)
-        self.model.tree.rebuild()
+        self.model.objects.rebuild()
 
 
 admin.site.register(treenav.MenuItem, MenuItemAdmin)

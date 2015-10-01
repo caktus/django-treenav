@@ -7,11 +7,11 @@ from django.contrib.contenttypes import fields
 from django.db.models.signals import post_save
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db.models.query import QuerySet
 
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
+from mptt.querysets import TreeQuerySet
 
 
 class Item(object):
@@ -74,7 +74,7 @@ def delete_cache():
         cache.delete('menu-tree-%s' % menu.slug)
 
 
-class MenuUnCacheQuerySet(QuerySet):
+class MenuUnCacheQuerySet(TreeQuerySet):
     def delete(self, *args, **kwargs):
         delete_cache()
         super(MenuUnCacheQuerySet, self).delete(*args, **kwargs)
@@ -84,9 +84,7 @@ class MenuUnCacheQuerySet(QuerySet):
         super(MenuUnCacheQuerySet, self).update(*args, **kwargs)
 
 
-class MenuItemManager(models.Manager):
-    def get_queryset(self):
-        return MenuUnCacheQuerySet(self.model)
+MenuItemManager = TreeManager.from_queryset(MenuUnCacheQuerySet)
 
 
 class MenuItem(MPTTModel):
@@ -127,7 +125,6 @@ class MenuItem(MPTTModel):
     href = models.CharField(_('href'), editable=False, max_length=255)
 
     objects = MenuItemManager()
-    tree = TreeManager()
 
     class Meta:
         ordering = ('lft', 'tree_id')
