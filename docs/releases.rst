@@ -6,11 +6,30 @@ Release and change history for django-treenav
 vNEXT (Released DATE)
 ---------------------
 
-- Python 3 support
+v1.0.0 (Released 2015-)
+------------------------------------
+
+This is a stable release supporting Django 1.8 and Python 3.
+
+- Python 3 support (#28)
+- Django 1.8 support (#40)
+- Confirmed support for django-mptt 0.7
 - Confirmed support for Django 1.7
-- Dropped support for Django prior to 1.4
-- Setup Travis
+- Dropped support for Django prior to 1.7
+- Dropped support for Python 2 prior to 2.7
+- Dropped support for Python 3 prior to 3.3
+- Dropped support for django-mptt prior to 0.7
+- Setup Travis (#27)
 - Add docs for 'Rebuild Tree' admin action.
+- Updated Tox (#45) and Travis (#50) to work with Tox 2.0
+- Updated sample project to work with Django 1.8 and django-mptt 0.7 (#25)
+- Fixed bug that prevented deletion of items from admin changelist (#54)
+- Fixed bug where reordering items in the admin would disorder tree (#42)
+
+Backwards Incompatible Changes
+___________________________________
+
+- ``MenuItem`` model no longer uses ``.tree`` for ``TreeManager`` methods. Instead use ``.objects`` (change from django-mptt 0.5)
 
 v0.9.2 (Released 2015-09-02)
 ------------------------------------
