@@ -121,6 +121,7 @@ class MenuItem(MPTTModel):
         max_length=36,
         blank=True,
         db_index=True,
+        default=''
     )
     content_object = fields.GenericForeignKey('content_type', 'object_id')
     href = models.CharField(_('href'), editable=False, max_length=255)
