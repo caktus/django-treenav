@@ -4,14 +4,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
-from django.db.models.signals import post_save
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db.models.query import QuerySet
 
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.utils import previous_current_next
+from mptt.querysets import TreeQuerySet
 
 
 class Item(object):
@@ -74,7 +73,7 @@ def delete_cache():
         cache.delete('menu-tree-%s' % menu.slug)
 
 
-class MenuUnCacheQuerySet(QuerySet):
+class MenuUnCacheQuerySet(TreeQuerySet):
     def delete(self, *args, **kwargs):
         delete_cache()
         super(MenuUnCacheQuerySet, self).delete(*args, **kwargs)
@@ -84,9 +83,7 @@ class MenuUnCacheQuerySet(QuerySet):
         super(MenuUnCacheQuerySet, self).update(*args, **kwargs)
 
 
-class MenuItemManager(models.Manager):
-    def get_queryset(self):
-        return MenuUnCacheQuerySet(self.model)
+MenuItemManager = TreeManager.from_queryset(MenuUnCacheQuerySet)
 
 
 class MenuItem(MPTTModel):
@@ -129,7 +126,6 @@ class MenuItem(MPTTModel):
     href = models.CharField(_('href'), editable=False, max_length=255)
 
     objects = MenuItemManager()
-    tree = TreeManager()
 
     class Meta:
         ordering = ('lft', 'tree_id')
@@ -181,28 +177,3 @@ class MenuItem(MPTTModel):
 
     def __unicode__(self):
         return self.slug
-
-
-def treenav_save_other_object_handler(sender, instance, created, **kwargs):
-    """
-    This signal attempts to update the HREF of any menu items that point to
-    another model object, when that objects is saved.
-    """
-    cache_key = 'django-treenav-menumodels'
-    if sender == MenuItem:
-        cache.delete(cache_key)
-    menu_models = cache.get(cache_key)
-    if not menu_models:
-        menu_models = []
-        for menu_item in MenuItem.objects.exclude(content_type__isnull=True):
-            menu_models.append(menu_item.content_type.model_class())
-        cache.set(cache_key, menu_models)
-    # only attempt to update MenuItem if sender is known to be referenced
-    if sender in menu_models:
-        ct = ContentType.objects.get_for_model(sender)
-        items = MenuItem.objects.filter(content_type=ct, object_id=instance.pk)
-        for item in items:
-            if item.href != instance.get_absolute_url():
-                item.href = instance.get_absolute_url()
-                item.save()
-post_save.connect(treenav_save_other_object_handler)
