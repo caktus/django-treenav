@@ -1,2 +1,2 @@
-django==1.8.4
-django-mptt==0.7.4
+django>=1.8,<1.9
+django-mptt>=0.8.6,<1.0

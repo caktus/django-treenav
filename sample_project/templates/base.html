@@ -20,7 +20,15 @@
     <body>
         {% load treenav_tags %}
         <h1>django-treenav</h1>
-        <p>To view a demo, create a new menu tree in the Django <a href='{% url 'admin:index' %}'>admin</a> and set the root menu item slug to "primary-nav".</p>
+        <p>
+            To view a demo, create a new menu tree in the Django <a href='{% url 'admin:index' %}'>admin</a> and
+            set the root MenuItem slug to "primary-nav", and its link to "/". Create as many child
+            MenuItems under the root making sure that the link values for each child is a valid
+            child link of its parent. For example, you could create a root MenuItem with a link of
+            "/", a child of the root with a link of "/one", and a child of that with a link of
+            "/one/two". Django Treenav uses the values in the links to determine where in the
+            hierarchy you are.
+        </p>
         <h2>show_treenav</h2>
         {% show_treenav "primary-nav" %}
         <h2>single_level_menu</h2>
