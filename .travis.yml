@@ -3,13 +3,6 @@ language: python
 python:
   - "2.7"
 
-env:
-  - TOXENV=py34-1.8.X,py33-1.8.X,py27-1.8.X
-  - TOXENV=py34-1.7.X,py33-1.7.X,py27-1.7.X
-  - TOXENV=flake8
-  - TOXENV=coverage
-  - TOXENV=docs
-
 install:
   - pip install tox
   - pip install coveralls

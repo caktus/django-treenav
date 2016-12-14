@@ -44,21 +44,21 @@ Features
 - Useful CSS classes for flexible UI customization
 - Automatically sets "active" on item and item's parents if `PATH_INFO` is equal to `item.href`
 - Efficient: minimizes database access with django-mptt functionality
-- Caches the tree so that repeated page views to not hit the database.
+- Caches the tree so that repeated page views do not hit the database.
 - Simple links in the `MenuItem` list view for refreshing the cache and href
   from the database.
 
 Requirements
 ------------
-- `django <https://github.com/django/django/>`_ >= 1.7.10
-- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.7.0
+- `django <https://github.com/django/django/>`_ >= 1.8
+- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.8.6
 
 Using the demo
 --------------
 
 For a quick demo, follow these steps::
 
-    $ mkvirtualenv --no-site-packages django-treenav
+    $ mkvirtualenv django-treenav
     (django-treenav)$ git clone git://github.com/caktus/django-treenav.git
     (django-treenav)$ cd django-treenav/
     (django-treenav)~/django-treenav$ python setup.py develop
@@ -77,7 +77,7 @@ Installation
     pip install django-treenav
 
 
-#. Add to your `INSTALLED_APPS` and run syncdb::
+#. Add to your `INSTALLED_APPS` and run migrate::
 
     INSTALLED_APPS = (
         ...,
@@ -86,16 +86,7 @@ Installation
     )
 
 
-#. Include these context processors:
-
-- Django 1.7::
-
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        "django.core.context_processors.request",
-        "treenav.context_processors.treenav_active",
-    )
-
-- Django >= 1.8::
+#. Include these context processors::
 
     TEMPLATES = [
       {

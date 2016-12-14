@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.db.models.signals import post_save
 
@@ -9,6 +8,7 @@ def treenav_save_other_object_handler(sender, instance, created, **kwargs):
     another model object, when that objects is saved.
     """
     # import here so models don't get loaded during app loading
+    from django.contrib.contenttypes.models import ContentType
     from .models import MenuItem
     cache_key = 'django-treenav-menumodels'
     if sender == MenuItem:
