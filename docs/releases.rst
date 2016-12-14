@@ -9,6 +9,13 @@ vNEXT (Released DATE)
 - To be determined
 
 
+v1.1.0 (Released 2016-12-14)
+------------------------------------
+
+- Django 1.9 and 1.10 support (#67)
+- Dropped support for Django 1.7
+
+
 v1.0.0 (Released 2015-10-01)
 ------------------------------------
 

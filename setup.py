@@ -7,7 +7,7 @@ setup(
     author_email='solutions@caktusgroup.com',
     packages=find_packages(exclude=['sample_project']),
     include_package_data=True,
-    url='http://github.com/caktus/django-treenav',
+    url='https://github.com/caktus/django-treenav',
     license='BSD',
     description='Extensible, hierarchical, and pluggable navigation system '
                 'for Django sites',
@@ -22,6 +22,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
