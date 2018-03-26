@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
@@ -88,7 +88,8 @@ MenuItemManager = TreeManager.from_queryset(MenuUnCacheQuerySet)
 
 class MenuItem(MPTTModel):
 
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
+                            on_delete=models.CASCADE)
     label = models.CharField(
         _('label'),
         max_length=255,
@@ -115,6 +116,7 @@ class MenuItem(MPTTModel):
         ContentType,
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     object_id = models.CharField(
         # use a CharField to be able to point to tables with UUID pks

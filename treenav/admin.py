@@ -1,7 +1,7 @@
 from functools import update_wrapper
 from django.conf.urls import url
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.contenttypes.admin import GenericStackedInline
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _

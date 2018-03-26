@@ -4,6 +4,7 @@ from django.template import Template, Context
 
 from django.contrib import admin
 
+import treenav.urls
 from ..admin import MenuItemAdmin
 from ..models import MenuItem
 
@@ -25,7 +26,7 @@ def test_view(request, item_slug):
     return HttpResponse(t.render(c))
 
 
-def test_404(request):
+def test_404(request, exception=None):
     return HttpResponseNotFound()
 
 
@@ -33,8 +34,8 @@ handler404 = test_404  # noqa
 
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^admin2/', include(site2.urls)),
+    url('^admin/', admin.site.urls),
+    url('^admin2/', site2.urls),
     url(r'^item/(?P<item_slug>[\w-]+)/$', test_view, name='test_view'),
-    url(r'^old/', include('treenav.urls')),
+    url(r'^old/', include(treenav.urls)),
 ]
