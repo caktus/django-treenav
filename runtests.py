@@ -22,7 +22,7 @@ if not settings.configured:
             'mptt',
             'treenav',
         ),
-        MIDDLEWARE_CLASSES=(
+        MIDDLEWARE=(
             'django.contrib.sessions.middleware.SessionMiddleware',
             'django.middleware.common.CommonMiddleware',
             'django.middleware.csrf.CsrfViewMiddleware',
@@ -52,7 +52,7 @@ if not settings.configured:
         ],
         # Load models directly to pick up test-only models
         # See: http://stackoverflow.com/a/25267435/347942
-        MIGRATION_MODULES={'treenav': 'treenav.migrations_not_run_during_tests'},
+        MIGRATION_MODULES={'treenav': None},
         SECRET_KEY='this-is-just-for-tests-so-not-that-secret',
         ROOT_URLCONF='treenav.tests.urls',
     )

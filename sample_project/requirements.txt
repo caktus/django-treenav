@@ -1,2 +1,2 @@
-django>=1.8,<1.9
+django>=2.0,<2.1
 django-mptt>=0.8.6,<1.0
