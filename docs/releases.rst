@@ -3,10 +3,12 @@ Release History
 
 Release and change history for django-treenav
 
-vNEXT (Released DATE)
----------------------
+v1.2.0 (Released 2018-03-28)
+----------------------------
 
-- To be determined
+- Add Django 1.11 and 2.0 support
+- Drop other Django version support (1.9 and 1.0 already unsupported
+  by Django; 1.8 goes out of support on April 1.)
 
 
 v1.1.0 (Released 2016-12-14)
