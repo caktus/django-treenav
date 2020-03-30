@@ -27,8 +27,8 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='treenav.MenuItem', null=True)),
+                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=models.CASCADE)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='treenav.MenuItem', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('lft', 'tree_id'),
