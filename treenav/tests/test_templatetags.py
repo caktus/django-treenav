@@ -70,3 +70,51 @@ class SingleLevelMenuNodeTestCase(TestCase):
         result = SingleLevelMenuNode('primary-nav', '0')._prepare_template_names(self.root)
 
         self.assertEqual(result, expected_names)
+
+    def test_prepare_template_names_returns_names_for_first_level_slug(self):
+        expected_names = [
+            'treenav/root/about-us/a.html',
+            'treenav/root/about-us/menuitem.html',
+            'treenav/root/a.html',
+            'treenav/root/menuitem.html',
+            'treenav/a.html',
+            'treenav/menuitem.html',
+        ]
+
+        result = SingleLevelMenuNode('about-us', '1')._prepare_template_names(self.child)
+
+        self.assertEqual(result, expected_names)
+
+    def test_prepare_template_names_returns_names_for_second_level_slug(self):
+        expected_names = [
+            'treenav/root/about-us/second/a.html',
+            'treenav/root/about-us/second/menuitem.html',
+            'treenav/root/about-us/a.html',
+            'treenav/root/about-us/menuitem.html',
+            'treenav/root/a.html',
+            'treenav/root/menuitem.html',
+            'treenav/a.html',
+            'treenav/menuitem.html',
+        ]
+
+        result = SingleLevelMenuNode('second', '2')._prepare_template_names(self.second_level)
+
+        self.assertEqual(result, expected_names)
+
+    def test_prepare_template_names_returns_names_for_third_level_slug(self):
+        expected_names = [
+            'treenav/root/about-us/second/third/a.html',
+            'treenav/root/about-us/second/third/menuitem.html',
+            'treenav/root/about-us/second/a.html',
+            'treenav/root/about-us/second/menuitem.html',
+            'treenav/root/about-us/a.html',
+            'treenav/root/about-us/menuitem.html',
+            'treenav/root/a.html',
+            'treenav/root/menuitem.html',
+            'treenav/a.html',
+            'treenav/menuitem.html',
+        ]
+
+        result = SingleLevelMenuNode('third', '3')._prepare_template_names(self.third_level)
+
+        self.assertEqual(result, expected_names)
