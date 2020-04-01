@@ -2,8 +2,7 @@ import random
 import string
 from unittest.mock import ANY, patch
 
-from django.test import TestCase
-from django.template import Context, Engine
+from django.test import TestCase, RequestFactory
 from django.template.base import Parser, Token, TOKEN_BLOCK
 
 from treenav.models import MenuItem, Item
@@ -18,40 +17,51 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'label': 'Primary Navigation',
             'slug': 'primary-nav',
             'order': 0,
+            'link': '/',
         })
         self.create_menu_item(**{
             'parent': self.root,
             'label': 'Our Blog',
             'slug': 'our-blog',
             'order': 4,
+            'link': '/our-blog',
         })
         self.create_menu_item(**{
             'parent': self.root,
             'label': 'Home',
             'slug': 'home',
             'order': 0,
+            'link': '/home',
         })
         self.child = self.create_menu_item(**{
             'parent': self.root,
             'label': 'About Us',
             'slug': 'about-us',
             'order': 9,
+            'link': '/about-us',
         })
         self.second_level = self.create_menu_item(**{
             'parent': self.child,
             'label': 'Second',
             'slug': 'second',
             'order': 0,
+            'link': '/about-us/second',
         })
         self.third_level = self.create_menu_item(**{
             'parent': self.second_level,
             'label': 'Third',
             'slug': 'third',
             'order': 0,
+            'link': '/about-us/second/third',
         })
 
         self.addCleanup(patch.stopall)
         self.m_render_to_string = patch('treenav.templatetags.treenav_tags.render_to_string').start()
+
+        token = Token(token_type=TOKEN_BLOCK, contents='single_level_menu "primary-nav" 0')
+        parser = Parser(tokens=[token], builtins=[register])
+        parser.parse()
+        self.node = single_level_menu(parser, token)
 
     def create_menu_item(self, **kwargs):
         defaults = {
@@ -65,69 +75,84 @@ class SingleLevelMenuNodeTestCase(TestCase):
     def get_random_string(self, length=10):
         return ''.join(random.choice(string.ascii_letters) for x in range(length))
 
-    def test_render_to_string_called_with_template_names_for_root_slug(self):
-        token = Token(token_type=TOKEN_BLOCK, contents='single_level_menu "primary-nav" 0')
-        parser = Parser(tokens=[token], builtins=[register])
-        parser.parse()
-        node = single_level_menu(parser, token)
+    def test_render_to_string_called_with_template_names_for_zero_level(self):
+        request = RequestFactory().get('/')
         expected_names = [
-            # 'treenav/root/a.html',
-            # 'treenav/root/menuitem.html',
             'treenav/primary-nav.html',
             'treenav/menuitem.html',
         ]
 
-        node.render_with_args([], 'primary-nav', 0)
+        self.node.render_with_args({'request': request}, 'primary-nav', 0)
 
         self.m_render_to_string.assert_called_once_with(
             expected_names,
-            {'menuitem': ANY, 'full_tree': False, 'single_level': True}
+            {'request': request, 'active_menu_items': [ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
         )
 
-    # def test_prepare_template_names_returns_names_for_first_level_slug(self):
-    #     expected_names = [
-    #         'treenav/root/about-us/a.html',
-    #         'treenav/root/about-us/menuitem.html',
-    #         'treenav/root/a.html',
-    #         'treenav/root/menuitem.html',
-    #         'treenav/a.html',
-    #         'treenav/menuitem.html',
-    #     ]
-    #
-    #     # result = SingleLevelMenuNode('about-us', '1')._prepare_template_names(self.child)
-    #
-    #     self.assertEqual(result, expected_names)
-    #
-    # def test_prepare_template_names_returns_names_for_second_level_slug(self):
-    #     expected_names = [
-    #         'treenav/root/about-us/second/a.html',
-    #         'treenav/root/about-us/second/menuitem.html',
-    #         'treenav/root/about-us/a.html',
-    #         'treenav/root/about-us/menuitem.html',
-    #         'treenav/root/a.html',
-    #         'treenav/root/menuitem.html',
-    #         'treenav/a.html',
-    #         'treenav/menuitem.html',
-    #     ]
-    #
-    #     # result = SingleLevelMenuNode('second', '2')._prepare_template_names(self.second_level)
-    #
-    #     self.assertEqual(result, expected_names)
-    #
-    # def test_prepare_template_names_returns_names_for_third_level_slug(self):
-    #     expected_names = [
-    #         'treenav/root/about-us/second/third/a.html',
-    #         'treenav/root/about-us/second/third/menuitem.html',
-    #         'treenav/root/about-us/second/a.html',
-    #         'treenav/root/about-us/second/menuitem.html',
-    #         'treenav/root/about-us/a.html',
-    #         'treenav/root/about-us/menuitem.html',
-    #         'treenav/root/a.html',
-    #         'treenav/root/menuitem.html',
-    #         'treenav/a.html',
-    #         'treenav/menuitem.html',
-    #     ]
-    #
-    #     # result = SingleLevelMenuNode('third', '3')._prepare_template_names(self.third_level)
-    #
-    #     self.assertEqual(result, expected_names)
+    def test_render_to_string_called_with_template_names_for_zero_level_even_when_request_path_info_is_deeper(self):
+        request = RequestFactory().get('/about-us')
+        expected_names = [
+            'treenav/primary-nav.html',
+            'treenav/menuitem.html',
+        ]
+
+        self.node.render_with_args({'request': request}, 'primary-nav', 0)
+
+        self.m_render_to_string.assert_called_once_with(
+            expected_names,
+            {'request': request, 'active_menu_items': [ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
+        )
+
+    def test_render_to_string_called_with_template_names_for_first_level(self):
+        request = RequestFactory().get('/about-us')
+        expected_names = [
+            'treenav/primary-nav/about-us.html',
+            'treenav/primary-nav/menuitem.html',
+            'treenav/about-us.html',
+            'treenav/menuitem.html',
+        ]
+
+        self.node.render_with_args({'request': request}, 'primary-nav', 1)
+
+        self.m_render_to_string.assert_called_once_with(
+            expected_names,
+            {'request': request, 'active_menu_items': [ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
+        )
+
+    def test_render_to_string_called_with_template_names_for_second_level(self):
+        request = RequestFactory().get('/about-us/second')
+        expected_names = [
+            'treenav/primary-nav/about-us/second.html',
+            'treenav/primary-nav/about-us/menuitem.html',
+            'treenav/primary-nav/second.html',
+            'treenav/primary-nav/menuitem.html',
+            'treenav/second.html',
+            'treenav/menuitem.html',
+        ]
+
+        self.node.render_with_args({'request': request}, 'primary-nav', 2)
+
+        self.m_render_to_string.assert_called_once_with(
+            expected_names,
+            {'request': request, 'active_menu_items': [ANY, ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
+        )
+
+    def test_render_to_string_called_with_template_names_for_third_level(self):
+        request = RequestFactory().get('/about-us/second/third')
+        expected_names = [
+            'treenav/primary-nav/about-us/second/third.html',
+            'treenav/primary-nav/about-us/second/menuitem.html',
+            'treenav/primary-nav/about-us/third.html',
+            'treenav/primary-nav/about-us/menuitem.html',
+            'treenav/primary-nav/third.html',
+            'treenav/primary-nav/menuitem.html',
+            'treenav/third.html',
+            'treenav/menuitem.html',
+        ]
+
+        self.node.render_with_args({'request': request}, 'primary-nav', 3)
+
+        self.m_render_to_string.assert_called_once_with(
+            expected_names,
+            {'request': request, 'active_menu_items': [ANY, ANY, ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
+        )

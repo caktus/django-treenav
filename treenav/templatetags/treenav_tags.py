@@ -57,15 +57,21 @@ class SingleLevelMenuNode(CaktNode):
             return ''
         context['full_tree'] = False
         context['single_level'] = True
-        templates = self._prepare_template_names(menu)
+        templates = self._prepare_template_names(context['menuitem'].node)
         return render_to_string(templates, context)
+        # return render_to_string('treenav/menuitem.html', context)
 
-    def _prepare_template_names(self, menu_item):
+    def _prepare_template_names(self, menu):
         """Prepare a list of template names that will be check for an existing template."""
         template_names = []
         prefix, suffix = ('treenav', '.html')
-        template_names.append(f'{prefix}/{menu_item.slug}{suffix}')
+        for ancestor in menu.get_ancestors():
+            template_names.append(f'{prefix}/menuitem{suffix}')
+            template_names.append(f'{prefix}/{menu.slug}{suffix}')
+            prefix += f'/{ancestor.slug}'
         template_names.append(f'{prefix}/menuitem{suffix}')
+        template_names.append(f'{prefix}/{menu.slug}{suffix}')
+        template_names.reverse()
         return template_names
 
 
