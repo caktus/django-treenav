@@ -5,8 +5,8 @@ from unittest.mock import ANY, patch
 from django.test import TestCase, RequestFactory
 from django.template.base import Parser, Token, TOKEN_BLOCK
 
-from treenav.models import MenuItem, Item
-from treenav.templatetags.treenav_tags import SingleLevelMenuNode, single_level_menu, register
+from treenav.models import MenuItem
+from treenav.templatetags.treenav_tags import single_level_menu, register
 
 
 class SingleLevelMenuNodeTestCase(TestCase):
