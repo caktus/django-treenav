@@ -62,7 +62,7 @@ def runtests():
     django.setup()
     TestRunner = get_runner(settings)
     test_runner = TestRunner(verbosity=1, interactive=True, failfast=False)
-    failures = test_runner.run_tests(['treenav.tests.test_templatetags', ])
+    failures = test_runner.run_tests(['treenav', ])
     sys.exit(failures)
 
 

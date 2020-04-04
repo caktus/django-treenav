@@ -1,5 +1,3 @@
-import random
-import string
 from unittest.mock import ANY, patch
 
 from django.test import TestCase, RequestFactory
@@ -13,82 +11,62 @@ from treenav.templatetags.treenav_tags import do_render_menu_children, single_le
 class SingleLevelMenuNodeTestCase(TestCase):
     """TestCase for single_level_menu."""
 
-    def setUp(self):
-        self.root = self.create_menu_item(**{
+    @classmethod
+    def setUpTestData(cls):
+        cls.root = MenuItem.objects.create(**{
             'label': 'Primary Navigation',
             'slug': 'primary-nav',
             'order': 0,
             'link': '/',
         })
-        self.create_menu_item(**{
-            'parent': self.root,
-            'label': 'Our Blog',
-            'slug': 'our-blog',
-            'order': 4,
-            'link': '/our-blog',
-        })
-        self.create_menu_item(**{
-            'parent': self.root,
-            'label': 'Home',
-            'slug': 'home',
-            'order': 0,
-            'link': '/home',
-        })
-        self.child = self.create_menu_item(**{
-            'parent': self.root,
+        cls.child = MenuItem.objects.create(**{
+            'parent': cls.root,
             'label': 'About Us',
             'slug': 'about-us',
             'order': 9,
             'link': '/about-us',
         })
-        self.second_level = self.create_menu_item(**{
-            'parent': self.child,
+        cls.second_level = MenuItem.objects.create(**{
+            'parent': cls.child,
             'label': 'Second',
             'slug': 'second',
             'order': 0,
             'link': '/about-us/second',
         })
-        self.third_level = self.create_menu_item(**{
-            'parent': self.second_level,
+        cls.third_level = MenuItem.objects.create(**{
+            'parent': cls.second_level,
             'label': 'Third',
             'slug': 'third',
             'order': 0,
             'link': '/about-us/second/third',
         })
-
-        self.addCleanup(patch.stopall)
-        self.m_render_to_string = patch('treenav.templatetags.treenav_tags.render_to_string').start()
-
         token = Token(token_type=TOKEN_BLOCK, contents='single_level_menu "primary-nav" 0')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
-        self.node = single_level_menu(parser, token)
+        cls.node = single_level_menu(parser, token)
 
-    def create_menu_item(self, **kwargs):
-        defaults = {
-            'label': self.get_random_string(),
-            'slug': self.get_random_string(),
-            'order': 0
-        }
-        defaults.update(kwargs)
-        return MenuItem.objects.create(**defaults)
-
-    def get_random_string(self, length=10):
-        return ''.join(random.choice(string.ascii_letters) for x in range(length))
+    def setUp(self):
+        self.addCleanup(patch.stopall)
+        self.m_render_to_string = patch('treenav.templatetags.treenav_tags.render_to_string').start()
 
     def test_render_to_string_called_with_template_names_for_zero_level(self):
         request = RequestFactory().get('/')
+        context = make_context({'request': request})
         expected_names = [
             'treenav/primary-nav.html',
             'treenav/menuitem.html',
         ]
+        expected_context = {
+            'request': request,
+            'active_menu_items': [ANY],
+            'menuitem': ANY,
+            'full_tree': False,
+            'single_level': True,
+        }
 
-        self.node.render_with_args({'request': request}, 'primary-nav', 0)
+        self.node.render_with_args(context, 'primary-nav', 0)
 
-        self.m_render_to_string.assert_called_once_with(
-            expected_names,
-            {'request': request, 'active_menu_items': [ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
-        )
+        self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
     def test_render_to_string_called_with_template_names_for_zero_level_even_when_request_path_info_is_deeper(self):
         request = RequestFactory().get('/about-us')
@@ -96,13 +74,17 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'treenav/primary-nav.html',
             'treenav/menuitem.html',
         ]
+        expected_context = {
+            'request': request,
+            'active_menu_items': [ANY, ANY],
+            'menuitem': ANY,
+            'full_tree': False,
+            'single_level': True,
+        }
 
         self.node.render_with_args({'request': request}, 'primary-nav', 0)
 
-        self.m_render_to_string.assert_called_once_with(
-            expected_names,
-            {'request': request, 'active_menu_items': [ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
-        )
+        self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
     def test_render_to_string_called_with_template_names_for_first_level(self):
         request = RequestFactory().get('/about-us')
@@ -112,13 +94,17 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'treenav/about-us.html',
             'treenav/menuitem.html',
         ]
+        expected_context = {
+            'request': request,
+            'active_menu_items': [ANY, ANY],
+            'menuitem': ANY,
+            'full_tree': False,
+            'single_level': True,
+        }
 
         self.node.render_with_args({'request': request}, 'primary-nav', 1)
 
-        self.m_render_to_string.assert_called_once_with(
-            expected_names,
-            {'request': request, 'active_menu_items': [ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
-        )
+        self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
     def test_render_to_string_called_with_template_names_for_second_level(self):
         request = RequestFactory().get('/about-us/second')
@@ -130,13 +116,17 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'treenav/second.html',
             'treenav/menuitem.html',
         ]
+        expected_context = {
+            'request': request,
+            'active_menu_items': [ANY, ANY, ANY],
+            'menuitem': ANY,
+            'full_tree': False,
+            'single_level': True,
+        }
 
         self.node.render_with_args({'request': request}, 'primary-nav', 2)
 
-        self.m_render_to_string.assert_called_once_with(
-            expected_names,
-            {'request': request, 'active_menu_items': [ANY, ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
-        )
+        self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
     def test_render_to_string_called_with_template_names_for_third_level(self):
         request = RequestFactory().get('/about-us/second/third')
@@ -150,92 +140,59 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'treenav/third.html',
             'treenav/menuitem.html',
         ]
+        expected_context = {
+            'request': request,
+            'active_menu_items': [ANY, ANY, ANY, ANY],
+            'menuitem': ANY,
+            'full_tree': False,
+            'single_level': True,
+        }
 
         self.node.render_with_args({'request': request}, 'primary-nav', 3)
 
-        self.m_render_to_string.assert_called_once_with(
-            expected_names,
-            {'request': request, 'active_menu_items': [ANY, ANY, ANY, ANY], 'menuitem': ANY, 'full_tree': False, 'single_level': True}
-        )
+        self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
 
 class DoRenderMenuChildrenTestCase(TestCase):
     """TestCase for do_render_menu_children tag."""
 
-    def setUp(self):
-        self.root = self.create_menu_item(**{
+    @classmethod
+    def setUpTestData(cls):
+        cls.root = MenuItem.objects.create(**{
             'label': 'Primary Navigation',
             'slug': 'primary-nav',
             'order': 0,
             'link': '/',
         })
-        self.create_menu_item(**{
-            'parent': self.root,
-            'label': 'Our Blog',
-            'slug': 'our-blog',
-            'order': 4,
-            'link': '/our-blog',
-        })
-        self.create_menu_item(**{
-            'parent': self.root,
-            'label': 'Home',
-            'slug': 'home',
-            'order': 0,
-            'link': '/home',
-        })
-        self.child = self.create_menu_item(**{
-            'parent': self.root,
+        cls.child = MenuItem.objects.create(**{
+            'parent': cls.root,
             'label': 'About Us',
             'slug': 'about-us',
-            'order': 9,
+            'order': 0,
             'link': '/about-us',
         })
-        self.second_level = self.create_menu_item(**{
-            'parent': self.child,
-            'label': 'Second',
-            'slug': 'second',
-            'order': 0,
-            'link': '/about-us/second',
-        })
-        self.third_level = self.create_menu_item(**{
-            'parent': self.second_level,
-            'label': 'Third',
-            'slug': 'third',
-            'order': 0,
-            'link': '/about-us/second/third',
-        })
-
-        self.addCleanup(patch.stopall)
-        self.m_render_to_string = patch('treenav.templatetags.treenav_tags.render_to_string').start()
 
         token = Token(token_type=TOKEN_BLOCK, contents='render_menu_children item')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
-        self.node = do_render_menu_children(parser, token)
+        cls.node = do_render_menu_children(parser, token)
 
-    def create_menu_item(self, **kwargs):
-        defaults = {
-            'label': self.get_random_string(),
-            'slug': self.get_random_string(),
-            'order': 0
-        }
-        defaults.update(kwargs)
-        return MenuItem.objects.create(**defaults)
+    def setUp(self):
+        self.addCleanup(patch.stopall)
+        self.m_render_to_string = patch('treenav.templatetags.treenav_tags.render_to_string').start()
 
-    def get_random_string(self, length=10):
-        return ''.join(random.choice(string.ascii_letters) for x in range(length))
+        self.request = RequestFactory().get('/one')
+        self.root_item = Item(self.root)
+        self.child_item = Item(self.child)
+        self.context = make_context({
+            'request': self.request,
+            'active_menu_items': [self.root_item, self.child_item],
+            'menuitem': self.root_item,
+            'full_tree': True,
+        })
 
     def test_render_to_string_called_with_template_names_for_child_level_one(self):
-        request = RequestFactory().get('/one')
-        root_item = Item(self.root)
-        item = Item(self.child)
-        context = make_context({
-            'request': request,
-            'active_menu_items': [root_item, item],
-            'menuitem': root_item,
-            'full_tree': False,
-        })
-        context.update({
+        self.context.update({
             'forloop': {
                 'parentloop': {},
                 'counter0': 0,
@@ -245,7 +202,7 @@ class DoRenderMenuChildrenTestCase(TestCase):
                 'first': True,
                 'last': False,
             },
-            'item': item,
+            'item': self.child_item,
         })
         expected_names = [
             'treenav/primary-nav/about-us.html',
@@ -254,9 +211,29 @@ class DoRenderMenuChildrenTestCase(TestCase):
             'treenav/menuitem.html',
         ]
 
-        self.node.render(context)
+        self.node.render(self.context)
 
-        self.m_render_to_string.assert_called_once_with(
-            expected_names,
-            {'request': request, 'menuitem': item, 'full_tree': False}
-        )
+        self.m_render_to_string.assert_called_once_with(expected_names, ANY)
+
+    def test_render_to_string_called_with_updated_context(self):
+        self.context.update({
+            'forloop': {
+                'parentloop': {},
+                'counter0': 0,
+                'counter': 1,
+                'revcounter': 2,
+                'revcounter0': 1,
+                'first': True,
+                'last': False,
+            },
+            'item': self.child_item,
+        })
+        expected_context = {
+            'request': self.request,
+            'menuitem': self.child_item,
+            'full_tree': True,
+        }
+
+        self.node.render(self.context)
+
+        self.m_render_to_string.assert_called_once_with(ANY, expected_context)
