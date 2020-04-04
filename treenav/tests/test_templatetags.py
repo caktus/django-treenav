@@ -5,7 +5,12 @@ from django.template.base import Parser, Token, TOKEN_BLOCK
 from django.template.context import make_context
 
 from treenav.models import MenuItem, Item
-from treenav.templatetags.treenav_tags import do_render_menu_children, single_level_menu, register
+from treenav.templatetags.treenav_tags import (
+    do_render_menu_children,
+    register,
+    show_treenav,
+    single_level_menu,
+)
 
 
 class SingleLevelMenuNodeTestCase(TestCase):
@@ -235,5 +240,65 @@ class DoRenderMenuChildrenTestCase(TestCase):
         }
 
         self.node.render(self.context)
+
+        self.m_render_to_string.assert_called_once_with(ANY, expected_context)
+
+
+class ShowTreenavTestCase(TestCase):
+    """TestCase for show_treenav tag."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.root = MenuItem.objects.create(**{
+            'label': 'Primary Navigation',
+            'slug': 'primary-nav',
+            'order': 0,
+            'link': '/',
+        })
+        cls.child = MenuItem.objects.create(**{
+            'parent': cls.root,
+            'label': 'About Us',
+            'slug': 'about-us',
+            'order': 0,
+            'link': '/about-us',
+        })
+
+        token = Token(token_type=TOKEN_BLOCK, contents='show_treenav "primary-nav"')
+        parser = Parser(tokens=[token], builtins=[register])
+        parser.parse()
+        cls.node = show_treenav(parser, token)
+
+    def setUp(self):
+        self.addCleanup(patch.stopall)
+        self.m_render_to_string = patch('treenav.templatetags.treenav_tags.render_to_string').start()
+
+        self.request = RequestFactory().get('/')
+        self.context = make_context({'request': self.request})
+
+    def test_render_to_string_called_with_template_names_for_root_item(self):
+        expected_names = [
+            'treenav/primary-nav.html',
+            'treenav/menuitem.html',
+        ]
+        expected_context = {
+            'request': self.request,
+            'active_menu_items': [ANY],
+            'menuitem': ANY,
+            'full_tree': False,
+        }
+
+        self.node.render_with_args(self.context, 'primary-nav')
+
+        self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
+
+    def test_render_to_string_called_with_updated_context(self):
+        expected_context = {
+            'request': self.request,
+            'active_menu_items': [ANY],
+            'menuitem': ANY,
+            'full_tree': True,
+        }
+
+        self.node.render_with_args(self.context, 'primary-nav', 'True')
 
         self.m_render_to_string.assert_called_once_with(ANY, expected_context)

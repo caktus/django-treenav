@@ -90,7 +90,8 @@ class MenuNode(CaktNode):
             context['active_menu_items'] = active_leaf.get_active_items()
         context['menuitem'] = root
         context['full_tree'] = ('True' == full_tree)
-        return render_to_string('treenav/menuitem.html', context)
+        template_names = self._prepare_template_names(root.node)
+        return render_to_string(template_names, context)
 
 
 @register.tag(name='show_treenav')
