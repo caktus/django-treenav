@@ -41,6 +41,7 @@ Features
 
 - Generic functionality with multiple URL specifications: `get_absolute_url()`, `reverse()`, or raw URLs
 - Packaged with templates to render the tree hierarchy with nested `<ul>`'s, but can easily be overridden with custom templates
+- Easily customize each menuitem's template or depend on the menuitem.html default.
 - Useful CSS classes for flexible UI customization
 - Automatically sets "active" on item and item's parents if `PATH_INFO` is equal to `item.href`
 - Efficient: minimizes database access with django-mptt functionality
@@ -108,3 +109,51 @@ Installation
 
 Development sponsored by `Caktus Consulting Group, LLC
 <http://www.caktusgroup.com/services/>`_.
+
+
+Override your templates
+-----------------------
+
+If you want to customize a menubar depending on the page a user visited you can do that.
+The `show_treenav`, `single_level_menu` and `render_menu_children` now offer a fully
+customize approach based on slugs of the nodes.
+
+For example:
+
+1. We have a menu that contains 4 items
+
+- root (slug: 'root', link: '/')
+- category1 (slug: 'category1', link: '/category', child of root)
+- subcategory (slug: 'subcategory', link: '/category/subcategory', child of child1)
+- category2 (slug: 'category2', link: '/category2', child of root)
+
+For root node treenav will search for::
+
+    [
+        'treenav/root.html',
+        'treenav/menuitem.html',
+    ]
+
+For category1::
+
+    [
+        'treenav/root/category1.html',
+        'treenav/root/menuitem.html',
+        'treenav/category1.html',
+        'treenav/menuitem.html',
+    ]
+
+For subcategory::
+
+    [
+        'treenav/root/category1/subcategory.html',
+        'treenav/root/category1/menuitem.html',
+        'treenav/root/subcategory.html',
+        'treenav/root/menuitem.html',
+        'treenav/subcategory.html',
+        'treenav/menuitem.html',
+    ]
+
+This way you can customize your menu depending on which page the user is.
+Each template_path is build based on the node's slug and each parent's slug that the child
+belongs to.
