@@ -27,6 +27,19 @@ class CaktNode(Node):
         self.args = [Variable(arg) for arg in args]
         self.kwargs = dict([(k, Variable(arg)) for k, arg in list(kwargs.items())])
 
+    def _prepare_template_names(self, menu):
+        """Prepare a list of template names that will be check for an existing template."""
+        template_names = []
+        prefix, suffix = ('treenav', '.html')
+        for ancestor in menu.get_ancestors():
+            template_names.append(f'{prefix}/menuitem{suffix}')
+            template_names.append(f'{prefix}/{menu.slug}{suffix}')
+            prefix += f'/{ancestor.slug}'
+        template_names.append(f'{prefix}/menuitem{suffix}')
+        template_names.append(f'{prefix}/{menu.slug}{suffix}')
+        template_names.reverse()
+        return template_names
+
     def render_with_args(self, context, *args, **kwargs):
         raise Exception('render_with_args must be implemented the class that inherits CaktNode')
 

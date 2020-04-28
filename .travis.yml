@@ -1,29 +1,29 @@
-dist: trusty
+dist: xenial
 sudo: false
 language: python
 
 matrix:
   include:
-  - python: 2.7
-    env: TOXENV=py27-flake8
   - python: 3.6
     env: TOXENV=py36-flake8
   - python: 3.6
     env: TOXENV=coverage
 
-  - python: 2.7
-    env: TOXENV=py27-dj1.11
-
-  - python: 3.4
-    env: TOXENV=py34-dj1.11
-  - python: 3.4
-    env: TOXENV=py34-dj2.0
-
   - python: 3.6
     env: TOXENV=py36-dj1.11
   - python: 3.6
     env: TOXENV=py36-dj2.0
+  
+  - python: 3.7
+    env: TOXENV=py37-dj1.11
+  - python: 3.7
+    env: TOXENV=py37-dj2.0
 
+  - python: 3.8
+    env: TOXENV=py38-dj1.11
+  - python: 3.8
+    env: TOXENV=py38-dj2.0
+ 
 install:
   - pip install tox
   - pip install coveralls

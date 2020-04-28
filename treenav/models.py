@@ -180,3 +180,6 @@ class MenuItem(MPTTModel):
 
     def __unicode__(self):
         return self.slug
+
+    def __str__(self):
+        return self.slug

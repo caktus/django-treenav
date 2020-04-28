@@ -57,7 +57,8 @@ class SingleLevelMenuNode(CaktNode):
             return ''
         context['full_tree'] = False
         context['single_level'] = True
-        return render_to_string('treenav/menuitem.html', context)
+        templates = self._prepare_template_names(context['menuitem'].node)
+        return render_to_string(templates, context)
 
 
 # Usage example:
@@ -89,7 +90,8 @@ class MenuNode(CaktNode):
             context['active_menu_items'] = active_leaf.get_active_items()
         context['menuitem'] = root
         context['full_tree'] = ('True' == full_tree)
-        return render_to_string('treenav/menuitem.html', context)
+        template_names = self._prepare_template_names(root.node)
+        return render_to_string(template_names, context)
 
 
 @register.tag(name='show_treenav')
@@ -111,7 +113,21 @@ class RenderMenuChildrenNode(template.Node):
         context = new_context(parent_context)
         context['menuitem'] = item
         context['full_tree'] = parent_context['full_tree']
-        return render_to_string('treenav/menuitem.html', context)
+        templates = self._prepare_template_names(item.node)
+        return render_to_string(templates, context)
+
+    def _prepare_template_names(self, menu):
+        """Prepare a list of template names that will be check for an existing template."""
+        template_names = []
+        prefix, suffix = ('treenav', '.html')
+        for ancestor in menu.get_ancestors():
+            template_names.append(f'{prefix}/menuitem{suffix}')
+            template_names.append(f'{prefix}/{menu.slug}{suffix}')
+            prefix += f'/{ancestor.slug}'
+        template_names.append(f'{prefix}/menuitem{suffix}')
+        template_names.append(f'{prefix}/{menu.slug}{suffix}')
+        template_names.reverse()
+        return template_names
 
 
 @register.tag(name='render_menu_children')

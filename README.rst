@@ -41,6 +41,7 @@ Features
 
 - Generic functionality with multiple URL specifications: `get_absolute_url()`, `reverse()`, or raw URLs
 - Packaged with templates to render the tree hierarchy with nested `<ul>`'s, but can easily be overridden with custom templates
+- Easily customize each item's template or fall back to a default `menuitem.html`
 - Useful CSS classes for flexible UI customization
 - Automatically sets "active" on item and item's parents if `PATH_INFO` is equal to `item.href`
 - Efficient: minimizes database access with django-mptt functionality
