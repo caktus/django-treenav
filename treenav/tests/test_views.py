@@ -11,7 +11,8 @@ from .base import TreeNavTestCase as TestCase
 from treenav.context_processors import treenav_active
 from treenav.models import MenuItem, Item
 from treenav.forms import MenuItemForm
-from treenav.tests import Team
+
+from .models import Team
 
 
 @override_settings(ROOT_URLCONF='treenav.tests.urls')
@@ -122,7 +123,7 @@ class TreeNavTestCase(TestCase):
         {% show_menu_crumbs "about-us" %}
         """
         team = Team.objects.create(slug='durham-bulls')
-        ct = ContentType.objects.get(app_label='treenav', model='team')
+        ct = ContentType.objects.get(app_label='treenav_tests', model='team')
         self.create_menu_item(**{
             'parent': self.root,
             'label': 'Durham Bulls',
@@ -137,7 +138,7 @@ class TreeNavTestCase(TestCase):
 
     def test_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
-        ct = ContentType.objects.get(app_label='treenav', model='team')
+        ct = ContentType.objects.get(app_label='treenav_tests', model='team')
         menu = self.create_menu_item(**{
             'label': 'Durham Bulls',
             'slug': 'durham-bulls',
@@ -149,7 +150,7 @@ class TreeNavTestCase(TestCase):
 
     def test_changed_getabsoluteurl(self):
         team = Team.objects.create(slug='durham-bulls')
-        ct = ContentType.objects.get(app_label='treenav', model='team')
+        ct = ContentType.objects.get(app_label='treenav_tests', model='team')
         menu = self.create_menu_item(
             parent=self.root,
             label='Durham Bulls',
@@ -167,7 +168,7 @@ class TreeNavTestCase(TestCase):
 
     def test_active_url(self):
         team = Team.objects.create(slug='durham-bulls')
-        ct = ContentType.objects.get(app_label='treenav', model='team')
+        ct = ContentType.objects.get(app_label='treenav_tests', model='team')
         self.child.object_id = team.pk
         self.child.content_type = ct
         self.child.content_object = team
@@ -267,7 +268,7 @@ class RefreshViewTestCase(TestCase):
     def test_trigger_refresh(self):
         "Trigger update of menu item HREFs."
         team = Team.objects.create(slug='durham-bulls')
-        ct = ContentType.objects.get(app_label='treenav', model='team')
+        ct = ContentType.objects.get(app_label='treenav_tests', model='team')
         menu = self.create_menu_item(
             label='Durham Bulls',
             slug='durham-bulls',

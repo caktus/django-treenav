@@ -1,7 +1,7 @@
 from unittest.mock import ANY, patch
 
 from django.test import TestCase, RequestFactory
-from django.template.base import Parser, Token, TOKEN_BLOCK
+from django.template.base import Parser, Token, TokenType
 from django.template.context import make_context
 
 from treenav.models import MenuItem, Item
@@ -45,7 +45,7 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'order': 0,
             'link': '/about-us/second/third',
         })
-        token = Token(token_type=TOKEN_BLOCK, contents='single_level_menu "primary-nav" 0')
+        token = Token(token_type=TokenType.BLOCK, contents='single_level_menu "primary-nav" 0')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
         cls.node = single_level_menu(parser, token)
@@ -177,7 +177,7 @@ class DoRenderMenuChildrenTestCase(TestCase):
             'link': '/about-us',
         })
 
-        token = Token(token_type=TOKEN_BLOCK, contents='render_menu_children item')
+        token = Token(token_type=TokenType.BLOCK, contents='render_menu_children item')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
         cls.node = do_render_menu_children(parser, token)
@@ -263,7 +263,7 @@ class ShowTreenavTestCase(TestCase):
             'link': '/about-us',
         })
 
-        token = Token(token_type=TOKEN_BLOCK, contents='show_treenav "primary-nav"')
+        token = Token(token_type=TokenType.BLOCK, contents='show_treenav "primary-nav"')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
         cls.node = show_treenav(parser, token)

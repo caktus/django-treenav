@@ -1,6 +1,6 @@
-from django.conf.urls import url, include, handler404
 from django.http import HttpResponse, HttpResponseNotFound
 from django.template import Template, Context
+from django.urls import path, include
 
 from django.contrib import admin
 
@@ -34,8 +34,8 @@ handler404 = test_404  # noqa
 
 
 urlpatterns = [
-    url('^admin/', admin.site.urls),
-    url('^admin2/', site2.urls),
-    url(r'^item/(?P<item_slug>[\w-]+)/$', test_view, name='test_view'),
-    url(r'^old/', include(treenav.urls)),
+    path('admin/', admin.site.urls),
+    path('admin2/', site2.urls),
+    path('item/<slug:item_slug>/$', test_view, name='test_view'),
+    path('old/', include(treenav.urls)),
 ]
