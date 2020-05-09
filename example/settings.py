@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'example.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'treenav.sqlite3'),
     }
 }
 
@@ -120,3 +120,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+for settings_file in ['local_settings']:
+    try:
+        settings_module = __import__('{}.{}'.format('example', settings_file))
+    except ModuleNotFoundError:
+        continue
+    else:
+        print(f'loading {settings_file}')
+        settings_module = getattr(settings_module, settings_file)
+        settings_module.apply_settings(globals())
