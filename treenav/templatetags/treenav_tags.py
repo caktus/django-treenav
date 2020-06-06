@@ -1,12 +1,36 @@
+import re
+
 from django import template
 from django.core.cache import cache
+from django.template import Node, Variable, VariableDoesNotExist
 from django.template.loader import render_to_string
 
 from treenav.models import MenuItem
-from treenav.templatetags import CaktNode, parse_args_kwargs
 
 
 register = template.Library()
+
+
+tag_argument = re.compile(r'(\'|")?[a-zA-Z0-9_.-]+(=|\'|")?((\'|")?[a-zA-Z0-9_.-]+(\'|")?)?')
+
+
+def parse_args_kwargs(parser, token):
+    """
+    Parser token content to positional and keyword arguments.
+    """
+    tag_name, arg_str = token.contents.split(' ', 1)
+    args = []
+    kwargs = {}
+
+    for match in tag_argument.finditer(arg_str):
+        arg = match.group()
+        if '=' in arg:
+            k, v = arg.split('=', 1)
+            kwargs[str(k)] = v
+        else:
+            args.append(arg)
+
+    return tag_name, args, kwargs
 
 
 def get_menu_item(slug):
@@ -22,11 +46,56 @@ def get_menu_item(slug):
 
 
 def new_context(parent_context):
-    """ Create new context rather than modifying parent context """
+    """Create new context rather than modifying parent context."""
     if 'request' in parent_context:
         return {'request': parent_context['request']}
     else:
         return {}
+
+
+class CaktNode(Node):
+    """
+    Base Node for treenav template tags.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.args = [Variable(arg) for arg in args]
+        self.kwargs = dict([(k, Variable(arg)) for k, arg in kwargs.items()])
+
+    def _prepare_template_names(self, menu):
+        """
+        Prepare a list of template names that will be check for an existing template.
+        """
+        template_names = []
+        prefix, suffix = ('treenav', '.html')
+        for ancestor in menu.get_ancestors():
+            template_names.append(f'{prefix}/menuitem{suffix}')
+            template_names.append(f'{prefix}/{menu.slug}{suffix}')
+            prefix += f'/{ancestor.slug}'
+        template_names.append(f'{prefix}/menuitem{suffix}')
+        template_names.append(f'{prefix}/{menu.slug}{suffix}')
+        template_names.reverse()
+        return template_names
+
+    def render_with_args(self, context, *args, **kwargs):
+        raise Exception('render_with_args must be implemented the class that inherits CaktNode')
+
+    def render(self, context):
+        args = []
+        for arg in self.args:
+            try:
+                args.append(arg.resolve(context))
+            except VariableDoesNotExist:
+                args.append(None)
+
+        kwargs = {}
+        for k, arg in list(self.kwargs.items()):
+            try:
+                kwargs[k] = arg.resolve(context)
+            except VariableDoesNotExist:
+                kwargs[k] = None
+
+        return self.render_with_args(context, *args, **kwargs)
 
 
 class SingleLevelMenuNode(CaktNode):
