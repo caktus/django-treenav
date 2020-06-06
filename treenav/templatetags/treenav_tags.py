@@ -77,9 +77,6 @@ class CaktNode(Node):
         template_names.reverse()
         return template_names
 
-    def render_with_args(self, context, *args, **kwargs):
-        raise Exception('render_with_args must be implemented the class that inherits CaktNode')
-
     def render(self, context):
         args = []
         for arg in self.args:
@@ -89,13 +86,16 @@ class CaktNode(Node):
                 args.append(None)
 
         kwargs = {}
-        for k, arg in list(self.kwargs.items()):
+        for k, arg in self.kwargs.items():
             try:
                 kwargs[k] = arg.resolve(context)
             except VariableDoesNotExist:
                 kwargs[k] = None
 
         return self.render_with_args(context, *args, **kwargs)
+
+    def render_with_args(self, context, *args, **kwargs):
+        raise Exception('%s does not implement render_with_args', self.__class__.__name__)
 
 
 class SingleLevelMenuNode(CaktNode):
@@ -169,7 +169,7 @@ def show_treenav(parser, token):
     return MenuNode(*args, **kwargs)
 
 
-class RenderMenuChildrenNode(template.Node):
+class RenderMenuChildrenNode(CaktNode):
     """
     Renders the children of the given MenuItem model object.
     """
@@ -184,19 +184,6 @@ class RenderMenuChildrenNode(template.Node):
         context['full_tree'] = parent_context['full_tree']
         templates = self._prepare_template_names(item.node)
         return render_to_string(templates, context)
-
-    def _prepare_template_names(self, menu):
-        """Prepare a list of template names that will be check for an existing template."""
-        template_names = []
-        prefix, suffix = ('treenav', '.html')
-        for ancestor in menu.get_ancestors():
-            template_names.append(f'{prefix}/menuitem{suffix}')
-            template_names.append(f'{prefix}/{menu.slug}{suffix}')
-            prefix += f'/{ancestor.slug}'
-        template_names.append(f'{prefix}/menuitem{suffix}')
-        template_names.append(f'{prefix}/{menu.slug}{suffix}')
-        template_names.reverse()
-        return template_names
 
 
 @register.tag(name='render_menu_children')
