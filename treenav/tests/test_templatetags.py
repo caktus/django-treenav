@@ -1,6 +1,6 @@
 from unittest.mock import ANY, patch
 
-from django.test import TestCase, RequestFactory
+from django.test import tag, TestCase, RequestFactory
 from django.template.base import Parser, Token, TokenType
 from django.template.context import make_context
 
@@ -10,9 +10,17 @@ from treenav.templatetags.treenav_tags import (
     register,
     show_treenav,
     single_level_menu,
+    CaktNode,
 )
 
 
+@tag('unit')
+class CaktNodeTestCase(TestCase):
+    """TestCase for CaktNode."""
+    pass
+
+
+@tag('unit')
 class SingleLevelMenuNodeTestCase(TestCase):
     """TestCase for single_level_menu."""
 
@@ -158,6 +166,7 @@ class SingleLevelMenuNodeTestCase(TestCase):
         self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
 
+@tag('unit')
 class DoRenderMenuChildrenTestCase(TestCase):
     """TestCase for do_render_menu_children tag."""
 
@@ -244,6 +253,7 @@ class DoRenderMenuChildrenTestCase(TestCase):
         self.m_render_to_string.assert_called_once_with(ANY, expected_context)
 
 
+@tag('unit')
 class ShowTreenavTestCase(TestCase):
     """TestCase for show_treenav tag."""
 
