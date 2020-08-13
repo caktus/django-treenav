@@ -10,7 +10,6 @@ from treenav.templatetags.treenav_tags import (
     register,
     show_treenav,
     single_level_menu,
-    CaktNode,
 )
 
 

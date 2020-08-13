@@ -26,6 +26,6 @@ setup(
     ],
     long_description=open('README.rst').read(),
     install_requires=[
-        "django-mptt>=0.11.0",
+        "django-mptt<1.0",
     ],
 )

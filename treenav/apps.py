@@ -25,6 +25,8 @@ def setup_test_app(package, label=None):
 
     This function should be called from app.tests __init__ module and pass
     along __package__.
+
+    link: https://code.djangoproject.com/ticket/7835#comment:46
     """
     app_config = AppConfig.create(package)
     app_config.apps = apps
