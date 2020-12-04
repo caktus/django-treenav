@@ -1,7 +1,7 @@
 from unittest.mock import ANY, patch
 
-from django.test import TestCase, RequestFactory
-from django.template.base import Parser, Token, TOKEN_BLOCK
+from django.test import tag, TestCase, RequestFactory
+from django.template.base import Parser, Token, TokenType
 from django.template.context import make_context
 
 from treenav.models import MenuItem, Item
@@ -13,6 +13,13 @@ from treenav.templatetags.treenav_tags import (
 )
 
 
+@tag('unit')
+class CaktNodeTestCase(TestCase):
+    """TestCase for CaktNode."""
+    pass
+
+
+@tag('unit')
 class SingleLevelMenuNodeTestCase(TestCase):
     """TestCase for single_level_menu."""
 
@@ -45,7 +52,7 @@ class SingleLevelMenuNodeTestCase(TestCase):
             'order': 0,
             'link': '/about-us/second/third',
         })
-        token = Token(token_type=TOKEN_BLOCK, contents='single_level_menu "primary-nav" 0')
+        token = Token(token_type=TokenType.BLOCK, contents='single_level_menu "primary-nav" 0')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
         cls.node = single_level_menu(parser, token)
@@ -158,6 +165,7 @@ class SingleLevelMenuNodeTestCase(TestCase):
         self.m_render_to_string.assert_called_once_with(expected_names, expected_context)
 
 
+@tag('unit')
 class DoRenderMenuChildrenTestCase(TestCase):
     """TestCase for do_render_menu_children tag."""
 
@@ -177,7 +185,7 @@ class DoRenderMenuChildrenTestCase(TestCase):
             'link': '/about-us',
         })
 
-        token = Token(token_type=TOKEN_BLOCK, contents='render_menu_children item')
+        token = Token(token_type=TokenType.BLOCK, contents='render_menu_children item')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
         cls.node = do_render_menu_children(parser, token)
@@ -244,6 +252,7 @@ class DoRenderMenuChildrenTestCase(TestCase):
         self.m_render_to_string.assert_called_once_with(ANY, expected_context)
 
 
+@tag('unit')
 class ShowTreenavTestCase(TestCase):
     """TestCase for show_treenav tag."""
 
@@ -263,7 +272,7 @@ class ShowTreenavTestCase(TestCase):
             'link': '/about-us',
         })
 
-        token = Token(token_type=TOKEN_BLOCK, contents='show_treenav "primary-nav"')
+        token = Token(token_type=TokenType.BLOCK, contents='show_treenav "primary-nav"')
         parser = Parser(tokens=[token], builtins=[register])
         parser.parse()
         cls.node = show_treenav(parser, token)
