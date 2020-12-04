@@ -14,10 +14,10 @@ class TreeOrder(TransactionTestCase):
 
     def test_order(self):
         primary_nav = MenuItem(
-            label='primary-nav',
-            slug='primary-nav',
+            label="primary-nav",
+            slug="primary-nav",
             order=0,
-            )
+        )
         primary_nav.save()
         child = {}
         for i in [2, 4, 5, 1, 0, 8]:
@@ -26,10 +26,10 @@ class TreeOrder(TransactionTestCase):
                 label=str(i),
                 slug=str(i),
                 order=i,
-                link='/',
-                )
+                link="/",
+            )
             child[i].save()
-        order = MenuItem.objects.exclude(
-            slug='primary-nav'
-            ).values_list('order', flat=True)
+        order = MenuItem.objects.exclude(slug="primary-nav").values_list(
+            "order", flat=True
+        )
         self.assertEqual(list(order), sorted(order))

@@ -7,4 +7,4 @@ class Team(models.Model):
 
     def get_absolute_url(self):
         """Return an hard-coded URL pattern for this model."""
-        return f'/team/{self.slug}/'
+        return f"/team/{self.slug}/"

@@ -14,14 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.urls import include, path
 from django.views.generic import TemplateView
-from django.urls import path, include
-
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('treenav/', include('treenav.urls')),
+    path("admin/", admin.site.urls),
+    path("treenav/", include("treenav.urls")),
     # Catch all URL to easily demonstrate treenav display
-    path('<path:resource>', TemplateView.as_view(template_name='base.html')),
-    path('', TemplateView.as_view(template_name='base.html')),
+    path("<path:resource>", TemplateView.as_view(template_name="base.html")),
+    path("", TemplateView.as_view(template_name="base.html")),
 ]
