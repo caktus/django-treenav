@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
+        # tox-gh-actions will only run the tox environments which match the currently
+        # running python-version. See [gh-actions] in tox.ini for the mapping
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
