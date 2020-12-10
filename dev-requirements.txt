@@ -1,7 +1,7 @@
-caktus-sphinx-theme
+. # <- install ourselves
 coverage
 django>=2.2,<3
-django-mptt>=0.11.0,<1.0
+flake8
 pre-commit
 sphinx
 tox
