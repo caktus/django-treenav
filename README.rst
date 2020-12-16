@@ -51,8 +51,8 @@ Features
 
 Requirements
 ------------
-- `django <https://github.com/django/django/>`_ >= 1.8
-- `django-mptt <http://github.com/django-mptt/django-mptt/>`_ >= 0.8.6
+- `django <https://github.com/django/django/>`_ >= 2.2
+- `django-mptt <https://github.com/django-mptt/django-mptt/>`_ >= 0.11.0
 
 Using the demo
 --------------
@@ -107,5 +107,27 @@ Installation
     ]
 
 
+Maintainer Information
+----------------------
+
+We use Github Actions to lint (using pre-commit, black, isort, and flake8),
+test (using tox and tox-gh-actions), calculate coverage (using coverage), and build
+documentation (using sphinx).
+
+We have a local script to do these actions locally, named ``maintain.sh``::
+
+  $ ./maintain.sh
+
+A Github Action workflow also builds and pushes a new package to PyPI whenever a new
+Release is created in Github. This uses a project-specific PyPI token, as described in
+the `PyPI documentation here <https://pypi.org/help/#apitoken>`_. That token has been
+saved in the ``PYPI_PASSWORD`` settings for this repo, but has not been saved anywhere
+else so if it is needed for any reason, the current one should be deleted and a new one
+generated.
+
+As always, be sure to bump the version in ``treenav/__init__.py`` before creating a
+Release, so that the proper version gets pushed to PyPI.
+
+
 Development sponsored by `Caktus Consulting Group, LLC
-<http://www.caktusgroup.com/services/>`_.
+<https://www.caktusgroup.com/services/>`_.

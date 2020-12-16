@@ -1,11 +1,11 @@
 from django.apps import AppConfig, apps
-from django.db.models.signals import pre_migrate, post_migrate
+from django.db.models.signals import post_migrate, pre_migrate
 
 from .signals import connect_post_save_handler, disconnect_post_save_handler
 
 
 class TreenavConfig(AppConfig):
-    name = 'treenav'
+    name = "treenav"
 
     def ready(self):
         """
@@ -32,7 +32,7 @@ def setup_test_app(package, label=None):
     app_config.apps = apps
     if label is None:
         containing_app_config = apps.get_containing_app_config(package)
-        label = f'{containing_app_config.label}_tests'
+        label = f"{containing_app_config.label}_tests"
     if label in apps.app_configs:
         raise ValueError(f"There's already an app registered with the '{label}' label.")
     app_config.label = label

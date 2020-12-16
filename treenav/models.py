@@ -1,16 +1,15 @@
 import re
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
+from django.db import models
 from django.urls import reverse
-
+from django.utils.translation import ugettext_lazy as _
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
-from mptt.utils import previous_current_next
 from mptt.querysets import TreeQuerySet
+from mptt.utils import previous_current_next
 
 
 class Item(object):
@@ -24,14 +23,14 @@ class Item(object):
         return str(self.node)
 
     def add_child(self, item):
-        if hasattr(self, '_enabled_children'):
+        if hasattr(self, "_enabled_children"):
             del self._enabled_children
         item.parent = self
         self.children.append(item)
 
     @property
     def enabled_children(self):
-        children = getattr(self, '_enabled_children', None)
+        children = getattr(self, "_enabled_children", None)
         if children is None:
             children = [c for c in self.children if c.node.is_enabled]
             self._enabled_children = children
@@ -39,7 +38,9 @@ class Item(object):
 
     def set_active(self, href):
         active_node = None
-        if (self.node.href.startswith('^') and re.match(self.node.href, href)) or self.node.href == href:
+        if (
+            self.node.href.startswith("^") and re.match(self.node.href, href)
+        ) or self.node.href == href:
             self.active = True
             parent = self.parent
             while parent:
@@ -60,17 +61,17 @@ class Item(object):
 
     def to_dict(self):
         return {
-            'node': self.node,
-            'active': self.active,
-            'children': [c.to_dict() for c in self.children],
+            "node": self.node,
+            "active": self.active,
+            "children": [c.to_dict() for c in self.children],
         }
 
 
 def delete_cache():
-    cache.delete('menus')
+    cache.delete("menus")
     for menu in MenuItem.objects.all():
-        cache.delete('menu-%s' % menu.slug)
-        cache.delete('menu-tree-%s' % menu.slug)
+        cache.delete("menu-%s" % menu.slug)
+        cache.delete("menu-tree-%s" % menu.slug)
 
 
 class MenuUnCacheQuerySet(TreeQuerySet):
@@ -88,26 +89,27 @@ MenuItemManager = TreeManager.from_queryset(MenuUnCacheQuerySet)
 
 class MenuItem(MPTTModel):
 
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
-                            on_delete=models.CASCADE)
+    parent = TreeForeignKey(
+        "self", null=True, blank=True, related_name="children", on_delete=models.CASCADE
+    )
     label = models.CharField(
-        _('label'),
+        _("label"),
         max_length=255,
         help_text="The display name on the web site.",
     )
     slug = models.SlugField(
-        _('slug'),
+        _("slug"),
         unique=True,
         max_length=255,
-        help_text="Unique identifier for this menu item (also CSS ID)"
+        help_text="Unique identifier for this menu item (also CSS ID)",
     )
     order = models.IntegerField(
-        _('order'),
+        _("order"),
         choices=[(x, x) for x in range(0, 51)],
     )
     is_enabled = models.BooleanField(default=True)
     link = models.CharField(
-        _('link'),
+        _("link"),
         max_length=255,
         help_text="The view of the page you want to link to, as a python path or the shortened URL name.",
         blank=True,
@@ -123,21 +125,21 @@ class MenuItem(MPTTModel):
         max_length=36,
         blank=True,
         db_index=True,
-        default=''
+        default="",
     )
-    content_object = fields.GenericForeignKey('content_type', 'object_id')
-    href = models.CharField(_('href'), editable=False, max_length=255)
+    content_object = fields.GenericForeignKey("content_type", "object_id")
+    href = models.CharField(_("href"), editable=False, max_length=255)
 
     objects = MenuItemManager()
 
     class Meta:
-        ordering = ('lft', 'tree_id')
+        ordering = ("lft", "tree_id")
 
     class MPTTMeta:
-        order_insertion_by = ('order', )
+        order_insertion_by = ("order",)
 
     def to_tree(self):
-        cache_key = 'menu-tree-%s' % self.slug
+        cache_key = "menu-tree-%s" % self.slug
         root = cache.get(cache_key)
         if not root:
             item = root = Item(self)
@@ -158,19 +160,19 @@ class MenuItem(MPTTModel):
         return root
 
     def save(self, *args, **kwargs):
-        literal_url_prefixes = ('/', 'http://', 'https://')
-        regex_url_prefixes = ('^',)
+        literal_url_prefixes = ("/", "http://", "https://")
+        regex_url_prefixes = ("^",)
         if self.link:
             if any([self.link.startswith(s) for s in literal_url_prefixes]):
                 self.href = self.link
             elif any([self.link.startswith(s) for s in regex_url_prefixes]):
-                self.href = ''  # regex should not be used as an actual URL
+                self.href = ""  # regex should not be used as an actual URL
             else:
                 self.href = reverse(self.link)
         elif self.content_object:
             self.href = self.content_object.get_absolute_url()
         else:
-            self.href = ''
+            self.href = ""
         delete_cache()
         super(MenuItem, self).save(*args, **kwargs)
 

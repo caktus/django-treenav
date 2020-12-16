@@ -9,8 +9,10 @@ def treenav_save_other_object_handler(sender, instance, created, **kwargs):
     """
     # import here so models don't get loaded during app loading
     from django.contrib.contenttypes.models import ContentType
+
     from .models import MenuItem
-    cache_key = 'django-treenav-menumodels'
+
+    cache_key = "django-treenav-menumodels"
     if sender == MenuItem:
         cache.delete(cache_key)
     menu_models = cache.get(cache_key)
