@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import mptt.fields
 from django.db import migrations, models
 
@@ -27,7 +25,7 @@ class Migration(migrations.Migration):
                 (
                     "label",
                     models.CharField(
-                        help_text=b"The display name on the web site.",
+                        help_text="The display name on the web site.",
                         max_length=255,
                         verbose_name="label",
                     ),
@@ -35,7 +33,7 @@ class Migration(migrations.Migration):
                 (
                     "slug",
                     models.SlugField(
-                        help_text=b"Unique identifier for this menu item (also CSS ID)",
+                        help_text="Unique identifier for this menu item (also CSS ID)",
                         unique=True,
                         max_length=255,
                         verbose_name="slug",
@@ -104,7 +102,7 @@ class Migration(migrations.Migration):
                 (
                     "link",
                     models.CharField(
-                        help_text=b"The view of the page you want to link to, as a python path or the shortened URL name.",  # noqa
+                        help_text="The view of the page you want to link to, as a python path or the shortened URL name.",  # noqa
                         max_length=255,
                         verbose_name="link",
                         blank=True,

@@ -26,7 +26,7 @@ class MenuItemFormMixin(object):
         return self.cleaned_data["link"]
 
     def clean(self):
-        super(MenuItemFormMixin, self).clean()
+        super().clean()
         content_type = self.cleaned_data["content_type"]
         object_id = self.cleaned_data["object_id"]
         if (content_type and not object_id) or (not content_type and object_id):

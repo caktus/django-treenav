@@ -69,7 +69,7 @@ class MenuItemAdmin(MPTTModelAdmin):
     href_link.allow_tags = True
 
     def get_urls(self):
-        urls = super(MenuItemAdmin, self).get_urls()
+        urls = super().get_urls()
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -127,7 +127,7 @@ class MenuItemAdmin(MPTTModelAdmin):
         """
         Rebuilds the tree after saving items related to parent.
         """
-        super(MenuItemAdmin, self).save_related(request, form, formsets, change)
+        super().save_related(request, form, formsets, change)
         self.model.objects.rebuild()
 
 

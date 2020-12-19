@@ -77,11 +77,11 @@ def delete_cache():
 class MenuUnCacheQuerySet(TreeQuerySet):
     def delete(self, *args, **kwargs):
         delete_cache()
-        super(MenuUnCacheQuerySet, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         delete_cache()
-        super(MenuUnCacheQuerySet, self).update(*args, **kwargs)
+        super().update(*args, **kwargs)
 
 
 MenuItemManager = TreeManager.from_queryset(MenuUnCacheQuerySet)
@@ -174,11 +174,11 @@ class MenuItem(MPTTModel):
         else:
             self.href = ""
         delete_cache()
-        super(MenuItem, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         delete_cache()
-        super(MenuItem, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def __unicode__(self):
         return self.slug
