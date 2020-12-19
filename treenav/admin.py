@@ -5,7 +5,9 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericStackedInline
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from mptt.admin import MPTTModelAdmin
 
 from treenav import models as treenav
@@ -63,10 +65,11 @@ class MenuItemAdmin(MPTTModelAdmin):
     form = MenuItemForm
 
     def href_link(self, obj):
-        return '<a href="%s">%s</a>' % (obj.href, obj.href)
+        return format_html(
+            '<a href="{}">{}</a>', mark_safe(obj.href), mark_safe(obj.href)
+        )
 
     href_link.short_description = "HREF"
-    href_link.allow_tags = True
 
     def get_urls(self):
         urls = super().get_urls()
