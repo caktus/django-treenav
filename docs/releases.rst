@@ -5,7 +5,7 @@ Release and change history for django-treenav. This project adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`_ starting with version 2.0.0.
 
 
-v2.0.0 AKA the @itsdkey release (Released TBD)
+v2.0.0 AKA the @itsdkey release (Released 2020-12-23)
 ----------------------------------------------
 
 - Django 2.2, 3.0 and 3.1 support (Thanks @itsdkey!)
