@@ -1,7 +1,30 @@
 Release History
 ====================================
 
-Release and change history for django-treenav
+Release and change history for django-treenav. This project adheres to `Semantic
+Versioning <https://semver.org/spec/v2.0.0.html>`_ starting with version 2.0.0.
+
+
+v2.0.0 AKA the @itsdkey release (Released TBD)
+----------------------------------------------
+
+- Django 2.2, 3.0 and 3.1 support (Thanks @itsdkey!)
+- Allow customization of template name in template tags (Thanks @itsdkey!)
+- Refactor tests and sample project to be more standard (Thanks @itsdkey!)
+- Require django-mptt >= 0.11
+- New migration (required because the MenuItem model is based on django-mptt, and
+  django-mptt has removed a number of indexes from fields - django-treenav itself has
+  not changed)
+- Switch from Travis CI to Github Acions CI
+- Add pre-commit, black, isort configs
+
+Backwards Incompatible Changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Drop support for Python 2 and Python 3 versions < 3.6
+- Drop support for Django < 2.2
+- Drop support for django-mptt < 0.11
+
 
 v1.2.0 (Released 2018-03-28)
 ----------------------------

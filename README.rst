@@ -5,7 +5,6 @@ django-treenav
 
    :master: |master-status|
    :develop: |develop-status|
-   :coverage: |coverage|
 
 An extensible, hierarchical, and pluggable navigation system for Django sites.
 
@@ -22,18 +21,14 @@ CMS product.
 For complete documentation checkout, `<http://django-treenav.readthedocs.org>`_
 
 .. |master-status| image::
-    https://travis-ci.org/caktus/django-treenav.svg?branch=master
-    :target: https://travis-ci.org/caktus/django-treenav
-    :alt: Master Build Status
+    https://github.com/caktus/django-treenav/workflows/lint-test/badge.svg?branch=master
+    :alt: Build Status
+    :target: https://github.com/caktus/django-treenav/actions?query=branch%3Amaster
 
 .. |develop-status| image::
-    https://travis-ci.org/caktus/django-treenav.svg?branch=develop
-    :target: https://travis-ci.org/caktus/django-treenav
-    :alt: Develop Build Status
-
-.. |coverage| image::
-    https://coveralls.io/repos/caktus/django-treenav/badge.png?branch=develop
-    :target: https://coveralls.io/r/caktus/django-treenav
+    https://github.com/caktus/django-treenav/workflows/lint-test/badge.svg?branch=develop
+    :alt: Build Status
+    :target: https://github.com/caktus/django-treenav/actions?query=branch%3Adevelop
 
 
 Features
@@ -51,24 +46,37 @@ Features
 
 Requirements
 ------------
+
 - `django <https://github.com/django/django/>`_ >= 2.2
 - `django-mptt <https://github.com/django-mptt/django-mptt/>`_ >= 0.11.0
 
 Using the demo
 --------------
 
-For a quick demo, follow these steps::
+For a quick demo, follow these steps:
 
-    $ mkvirtualenv django-treenav
-    (django-treenav)$ git clone git://github.com/caktus/django-treenav.git
-    (django-treenav)$ cd django-treenav/
-    (django-treenav)~/django-treenav$ python setup.py develop
-    (django-treenav)~/django-treenav$ cd sample_project/
-    (django-treenav)~/django-treenav/sample_project$ pip install -r requirements.txt
-    (django-treenav)~/django-treenav/sample_project$ ./manage.py migrate
-    (django-treenav)~/django-treenav/sample_project$ ./manage.py runserver
+1. Create a virtualenv. (This example uses ``mkvirtualenv``, but there are many other
+   ways to do it)::
 
-Visit http://localhost:8000/ in your browser and follow the instructions.
+     $ mkvirtualenv django-treenav
+
+#. Check out the code and install the requirements::
+
+     (django-treenav)$ git clone git://github.com/caktus/django-treenav.git
+     (django-treenav)$ cd django-treenav/
+     (django-treenav)~/django-treenav/$ pip install -Ur dev-requirements.txt
+
+#. Run migrations and create a superuser so you can login to the Django admin::
+
+     (django-treenav)~/django-treenav$ python manage.py migrate
+     (django-treenav)~/django-treenav$ python manage.py createsuperuser
+
+#. Run the server::
+
+     (django-treenav)~/django-treenav$ python manage.py runserver
+
+#. Visit http://localhost:8000/ in your browser and follow the instructions.
+
 
 Installation
 ------------

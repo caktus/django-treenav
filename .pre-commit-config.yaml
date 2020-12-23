@@ -28,3 +28,12 @@ repos:
     rev: master
     hooks:
       - id: flake8
+
+  - repo: local
+    hooks:
+      - id: missing-migrations
+        name: 'Missing migrations'
+        entry: python manage.py makemigrations --check --dry-run
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]

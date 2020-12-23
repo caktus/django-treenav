@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations, models
 
 
@@ -15,7 +13,7 @@ class Migration(migrations.Migration):
             model_name="menuitem",
             name="object_id",
             field=models.CharField(
-                default=b"", max_length=36, db_index=True, blank=True
+                default="", max_length=36, db_index=True, blank=True
             ),
         ),
     ]
